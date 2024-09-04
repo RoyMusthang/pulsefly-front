@@ -2,7 +2,8 @@ import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import { useEffect, useCallback } from "react";
 import Header from "@/components/header";
-import React, { useState } from 'react'
+import type React from 'react'
+import { useState } from 'react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -11,7 +12,7 @@ import { UploadIcon, FileIcon, CheckCircleIcon } from 'lucide-react'
 import { Progress } from "@/components/ui/progress"
 import axios from "axios";
 
-const CHUNK_SIZE = 1024 * 1024 * 5; // 5MB chunks
+const CHUNK_SIZE = 1024 * 1024 * 0.1; // 0.5MB chunks
 
 export default function Leads() {
   const [file, setFile] = useState<File | null>(null)
@@ -31,9 +32,42 @@ export default function Leads() {
     validateToken();
   }, [navigate]);
 
-  const uploadChunk = useCallback(async (chunk: Blob, chunkIndex: number, totalChunks: number) => {
+  const readFileAsText = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = reject;
+      reader.readAsText(file);
+    });
+  };
+
+  const chunkText = (text: string, chunkSize: number): string[] => {
+    const lines = text.split('\n');
+    const chunks: string[] = [];
+    let currentChunk = '';
+    let currentChunkSize = 0;
+
+    for (const line of lines) {
+      const lineSize = new Blob([line]).size;
+      if (currentChunkSize + lineSize > chunkSize) {
+        chunks.push(currentChunk);
+        currentChunk = '';
+        currentChunkSize = 0;
+      }
+      currentChunk += line + '\n';
+      currentChunkSize += lineSize;
+    }
+
+    if (currentChunk) {
+      chunks.push(currentChunk);
+    }
+
+    return chunks;
+  };
+
+  const uploadChunk = useCallback(async (chunk: string, chunkIndex: number, totalChunks: number) => {
     const formData = new FormData();
-    formData.append('file', chunk, `chunk-${chunkIndex}`);
+    formData.append('file', new Blob([chunk], { type: 'text/csv' }), `chunk-${chunkIndex}`);
     formData.append('chunkIndex', chunkIndex.toString());
     formData.append('totalChunks', totalChunks.toString());
 
@@ -60,26 +94,28 @@ export default function Leads() {
     setIsUploading(true);
     setUploadProgress(0);
 
-    const totalChunks = Math.ceil(file.size / CHUNK_SIZE);
+    try {
+      const fileText = await readFileAsText(file);
+      const chunks = chunkText(fileText, CHUNK_SIZE);
+      const totalChunks = chunks.length;
 
-    for (let chunkIndex = 0; chunkIndex < totalChunks; chunkIndex++) {
-      const start = chunkIndex * CHUNK_SIZE;
-      const end = Math.min(start + CHUNK_SIZE, file.size);
-      const chunk = file.slice(start, end);
-
-      try {
-        await uploadChunk(chunk, chunkIndex, totalChunks);
-        // Atualiza o progresso após o chunk ser enviado
-        setUploadProgress(prevProgress => ((chunkIndex + 1) / totalChunks) * 100);
-      } catch (error) {
-        console.error('Error uploading chunk:', error);
-        setIsUploading(false);
-        return;
+      for (let chunkIndex = 0; chunkIndex < totalChunks; chunkIndex++) {
+        try {
+          await uploadChunk(chunks[chunkIndex], chunkIndex, totalChunks);
+          setUploadProgress(prevProgress => ((chunkIndex + 1) / totalChunks) * 100);
+        } catch (error) {
+          console.error('Error uploading chunk:', error);
+          setIsUploading(false);
+          return;
+        }
       }
-    }
 
-    setIsUploading(false);
-    setUploadComplete(true);
+      setUploadComplete(true);
+    } catch (error) {
+      console.error('Error reading file:', error);
+    } finally {
+      setIsUploading(false);
+    }
   }, [file, uploadChunk]);
 
   const handleFileSelect = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {

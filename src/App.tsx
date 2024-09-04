@@ -6,34 +6,12 @@ import { useEffect, useState } from "react";
 import Header from "./components/header";
 import { toast } from "./components/ui/use-toast";
 import { Input } from "./components/ui/input";
+import axios from "axios";
 
 export default function Page() {
   const navigate = useNavigate();
-  const [pixValue, setPixValue] = useState("")
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    
-    // Validação básica
-    const value = parseFloat(pixValue)
-    if (isNaN(value) || value <= 0) {
-      toast({
-        title: "Erro",
-        description: "Por favor, insira um valor válido para o PIX.",
-        variant: "destructive",
-      })
-      return
-    }
-
-    // Simulação de envio do PIX
-    toast({
-      title: "PIX Enviado",
-      description: `Valor de R$ ${value.toFixed(2)} enviado com sucesso!`,
-    })
-
-    // Limpar o input após o envio
-    setPixValue("")
-  }
-
+  const [pixMessage, setPixMessage] = useState("")
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     const validateToken = async () => {
       const token = Cookies.get("access_token");
@@ -44,6 +22,39 @@ export default function Page() {
     };
     validateToken();
   }, []);
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    
+      // Simulação de envio do PIX
+    try {
+      
+      const response = await axios.post('http://localhost:8080/pix/', {
+        message: pixMessage,
+      },
+      {
+        headers: {
+          'Authorization': `Bearer ${Cookies.get('access_token')}`,
+        },
+      })
+  
+      toast({
+        title: "PIX Enviado",
+        description: "Valor de R$ 00.1 enviado com sucesso!",
+      })
+      console.log(response.data)
+    } catch (error) {
+      toast({
+        title: "PIX erro",
+        description: "falhou!",
+      })
+      console.log(error)
+    }
+
+    // Limpar o input após o envio
+    setPixMessage("")
+  }
+
+ 
 
   return (
     <>
@@ -51,12 +62,10 @@ export default function Page() {
       <div className="flex items-center justify-center min-h-screen bg-gray-100">
       <form onSubmit={handleSubmit} className="flex flex-col space-y-4 w-full max-w-sm">
       <Input
-        type="number"
-        placeholder="Valor do PIX"
-        value={pixValue}
-        onChange={(e) => setPixValue(e.target.value)}
-        step="0.01"
-        min="0"
+        type="text"
+        placeholder="Mensagem do PIX"
+        value={pixMessage}
+        onChange={(e) => setPixMessage(e.target.value)}
         required
         className="text-lg"
       />
