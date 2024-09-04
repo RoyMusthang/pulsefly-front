@@ -12,10 +12,10 @@ import { Label } from "@/components/ui/label";
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import axios from "axios";
-import { } from 'react-router-dom';
 import { useToast } from "@/components/ui/use-toast";
 
 export function Register() {
+	const navigate = useNavigate()
 	const { toast } = useToast()
 
 	const [name, setName] = useState("");
@@ -24,7 +24,6 @@ export function Register() {
 	const [confirmPassword, setConfirmPassword] = useState("");
 
 	const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-		const navigate = useNavigate();
 		e.preventDefault();
 		if (name.length < 3) {
 			toast({
@@ -62,15 +61,13 @@ export function Register() {
 				email,
 				password,
 			});
-			if (response.status === 201) {
 
 				toast({
 					title: "Usuario criado com sucesso",
 					description: response.data.name,
 				})
-				// Redirect to login page after successful registration
-				navigate('/login');
-			}
+				navigate("/login")
+				
 		} catch (err) {
 			toast({
 				title: "Erro ao cadastrar usuário.",
