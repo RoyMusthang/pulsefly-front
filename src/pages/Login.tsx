@@ -25,7 +25,7 @@ export function Login() {
 	const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 		try {
-			const response = await axios.post("http://localhost:8080/auth/login", {
+			const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/auth/login`, {
 				email,
 				password,
 			});

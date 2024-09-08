@@ -54,7 +54,7 @@ export default function Leads() {
         currentChunk = '';
         currentChunkSize = 0;
       }
-      currentChunk += line + '\n';
+      currentChunk += `${line}\n`;
       currentChunkSize += lineSize;
     }
 
@@ -71,7 +71,7 @@ export default function Leads() {
     formData.append('chunkIndex', chunkIndex.toString());
     formData.append('totalChunks', totalChunks.toString());
 
-    const response = await axios.post('http://localhost:8080/ping', formData, {
+    const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/lead`, formData, {
       headers: {
         'Authorization': `Bearer ${Cookies.get('access_token')}`,
         'Content-Type': 'multipart/form-data'
@@ -102,7 +102,7 @@ export default function Leads() {
       for (let chunkIndex = 0; chunkIndex < totalChunks; chunkIndex++) {
         try {
           await uploadChunk(chunks[chunkIndex], chunkIndex, totalChunks);
-          setUploadProgress(prevProgress => ((chunkIndex + 1) / totalChunks) * 100);
+          setUploadProgress(_prevProgress => ((chunkIndex + 1) / totalChunks) * 100);
         } catch (error) {
           console.error('Error uploading chunk:', error);
           setIsUploading(false);

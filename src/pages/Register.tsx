@@ -56,7 +56,7 @@ export function Register() {
 		}
 
 		try {
-			const response = await axios.post("http://localhost:8080/auth/register", {
+			const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/auth/register`, {
 				name,
 				email,
 				password,
@@ -71,7 +71,7 @@ export function Register() {
 		} catch (err) {
 			toast({
 				title: "Erro ao cadastrar usuário.",
-				description: "Por favor, tente novamente."
+				description: `erro: ${err}`
 			})
 		}
 	};

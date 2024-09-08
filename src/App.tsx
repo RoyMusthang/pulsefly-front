@@ -1,5 +1,5 @@
 
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Button } from "./components/ui/button";
 import Cookies from "js-cookie";
 import { useEffect, useState } from "react";
@@ -28,7 +28,7 @@ export default function Page() {
       // Simulação de envio do PIX
     try {
       
-      const response = await axios.post('http://localhost:8080/pix/', {
+      const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/pix/`, {
         message: pixMessage,
       },
       {

@@ -15,7 +15,7 @@ export default function Settings() {
       }
     };
     validateToken();
-  }, []);
+  }, [navigate]);
 
   return (
     <>

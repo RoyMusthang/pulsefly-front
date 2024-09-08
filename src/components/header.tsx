@@ -1,12 +1,12 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from './ui/button';
 import Cookies from 'js-cookie';
 import { Sheet, SheetContent, SheetTrigger } from './ui/sheet';
 import { Input } from './ui/input';
-import { CircleUser, Menu, Package2, Search } from "lucide-react"
+import { CircleUser, Menu, Search } from "lucide-react"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from './ui/dropdown-menu';
 import { Separator } from './ui/separator';
+import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 
 const Header: React.FC = () => {
 
@@ -20,9 +20,9 @@ const Header: React.FC = () => {
       <nav className="hidden flex-col gap-6 text-lg font-medium md:flex md:flex-row md:items-center md:gap-5 md:text-sm lg:gap-6">
         <Link
           to="#"
-          className="flex items-center gap-2 text-lg font-semibold md:text-base"
+          className="gap-2 text-nowrap text-lg font-semibold md:text-base"
         >
-          PulseFly
+          Espanca Lead 
         </Link>
         <Separator orientation="vertical" />
         <Link
@@ -33,10 +33,10 @@ const Header: React.FC = () => {
         </Link>
         <Separator orientation="vertical" />
         <Link
-          to="/wallet"
+          to="/shop"
           className="text-muted-foreground transition-colors hover:text-foreground"
         >
-          Wallet
+          Loja
         </Link>
         <Separator orientation="vertical" />
         <Link
@@ -48,7 +48,7 @@ const Header: React.FC = () => {
         <Separator orientation="vertical" />
         <Link
           to="/settings"
-          className="text-foreground transition-colors hover:text-foreground"
+          className="text-muted-foreground transition-colors hover:text-foreground"
         >
           Settings
         </Link>
@@ -70,34 +70,27 @@ const Header: React.FC = () => {
               to="#"
               className="flex items-center gap-2 text-lg font-semibold"
             >
-              <Package2 className="h-6 w-6" />
-              <span className="sr-only">Acme Inc</span>
+              Espanca Lead
             </Link>
             <Link
-              to="#"
+              to="/"
               className="text-muted-foreground hover:text-foreground"
             >
               Dashboard
             </Link>
             <Link
-              to="#"
+              to="/shop"
               className="text-muted-foreground hover:text-foreground"
             >
-              Orders
+              Loja
             </Link>
             <Link
-              to="#"
+              to="/leads"
               className="text-muted-foreground hover:text-foreground"
             >
-              Products
+              Leads
             </Link>
-            <Link
-              to="#"
-              className="text-muted-foreground hover:text-foreground"
-            >
-              Customers
-            </Link>
-            <Link to="#" className="text-muted-foreground hover:text-foreground">
+            <Link to="/settings" className="text-muted-foreground hover:text-foreground">
               Settings
             </Link>
           </nav>
@@ -116,16 +109,29 @@ const Header: React.FC = () => {
         </form>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="secondary" size="icon" className="rounded-full">
-              <CircleUser className="h-5 w-5" />
-              <span className="sr-only">Toggle user menu</span>
-            </Button>
+            <Avatar>
+              <AvatarFallback>US</AvatarFallback>
+              <AvatarImage>
+                <CircleUser className="h-5 w-5" />
+
+              </AvatarImage>
+            </Avatar>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuLabel>My Account</DropdownMenuLabel>
+            <DropdownMenuLabel>
+              Minha Conta
+            </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>Settings</DropdownMenuItem>
-            <DropdownMenuItem>Support</DropdownMenuItem>
+            <DropdownMenuItem>
+              <Link to="/settings">
+              Configurações
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem>
+              <Link  to="https://api.whatsapp.com/send/?phone=%2B557799252615&text&type=phone_number&app_absent=0">
+              Suporte
+              </Link>
+            </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={handleLogout}>Logout</DropdownMenuItem>
           </DropdownMenuContent>

@@ -7,7 +7,7 @@ import { Login } from "./pages/Login.tsx";
 import { Register } from "./pages/Register.tsx";
 import { Toaster } from "@/components/ui/toaster"
 import Leads from "./pages/Leads.tsx";
-import Wallet from "./pages/Wallet.tsx";
+import Shop from "./pages/Shop.tsx";
 import Settings from "./pages/Setting.tsx";
 
 const route = createBrowserRouter([
@@ -28,8 +28,8 @@ const route = createBrowserRouter([
 		element: <Leads />,
 	},
 	{
-		path: "/wallet",
-		element: <Wallet />,
+		path: "/shop",
+		element: <Shop />,
 	},
 	{
 		path: "/settings",
