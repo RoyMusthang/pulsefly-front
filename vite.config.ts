@@ -11,6 +11,7 @@ export default defineConfig({
   },
   preview: {
     port: 8080,
+    host: true
   },
   define: {
     "import.meta.env": {},
