@@ -1,4 +1,3 @@
-
 import { useNavigate } from "react-router-dom";
 import { Button } from "./components/ui/button";
 import Cookies from "js-cookie";
@@ -6,74 +5,178 @@ import { useEffect, useState } from "react";
 import Header from "./components/header";
 import { toast } from "./components/ui/use-toast";
 import { Input } from "./components/ui/input";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
+import { BarChart as BarChartIcon, Mail, CreditCard, Send } from "lucide-react";
+import {
+	BarChart,
+	Bar,
+	XAxis,
+	YAxis,
+	Tooltip,
+	ResponsiveContainer,
+} from "recharts";
 import axios from "axios";
+import { ChartContainer, type ChartConfig } from "./components/ui/chart";
+
+const chartData = [
+	{ name: "Mon", emails: 120, fill: "var(--color-desktop)" },
+	{ name: "Tue", emails: 200, fill: "var(--color-desktop)" },
+	{ name: "Wed", emails: 150, fill: "var(--color-desktop)" },
+	{ name: "Thu", emails: 80, fill: "var(--color-desktop)" },
+	{ name: "Fri", emails: 170, fill: "var(--color-desktop)" },
+	{ name: "Sat", emails: 50, fill: "var(--color-desktop)" },
+	{ name: "Sun", emails: 30, fill: "var(--color-desktop)" },
+];
+
+const chartConfig = {
+  desktop: {
+    label: "Desktop",
+    color: "hsl(var(--chart-3))",
+  },
+  mobile: {
+    label: "Mobile",
+    color: "hsl(var(--chart-2))",
+  },
+} satisfies ChartConfig
 
 export default function Page() {
-  const navigate = useNavigate();
-  const [pixMessage, setPixMessage] = useState("")
-  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
-  useEffect(() => {
-    const validateToken = async () => {
-      const token = Cookies.get("access_token");
-      if (!token) {
-        navigate("/login")
-        return;
-      }
-    };
-    validateToken();
-  }, []);
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    
-      // Simulação de envio do PIX
-    try {
-      
-      const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/pix/`, {
-        message: pixMessage,
-      },
-      {
-        headers: {
-          'Authorization': `Bearer ${Cookies.get('access_token')}`,
-        },
-      })
-  
-      toast({
-        title: "PIX Enviado",
-        description: "Valor de R$ 00.1 enviado com sucesso!",
-      })
-      console.log(response.data)
-    } catch (error) {
-      toast({
-        title: "PIX erro",
-        description: "falhou!",
-      })
-      console.log(error)
-    }
+	const emailsSent = Math.floor(Math.random() * (50000 - 123 + 1) + 123);
+	const totalEmailCredits = 50000;
+	const availableCredits = totalEmailCredits - emailsSent;
+	const navigate = useNavigate();
+	const [pixMessage, setPixMessage] = useState("");
+	// biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+	useEffect(() => {
+		const validateToken = async () => {
+			const token = Cookies.get("access_token");
+			if (!token) {
+				navigate("/login");
+				return;
+			}
+		};
+		validateToken();
+	}, []);
+	const handleSubmit = async (e: React.FormEvent) => {
+		e.preventDefault();
 
-    // Limpar o input após o envio
-    setPixMessage("")
-  }
+		// Simulação de envio do PIX
+		try {
+			const response = await axios.post(
+				`${import.meta.env.VITE_BASE_URL}/pix/`,
+				{
+					message: pixMessage,
+				},
+				{
+					headers: {
+						Authorization: `Bearer ${Cookies.get("access_token")}`,
+					},
+				},
+			);
 
- 
+			toast({
+				title: "PIX Enviado",
+				description: "Valor de R$ 00.1 enviado com sucesso!",
+			});
+			console.log(response.data);
+		} catch (error) {
+			toast({
+				title: "PIX erro",
+				description: "falhou!",
+			});
+			console.log(error);
+		}
 
-  return (
-    <>
-      <Header />
-      <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      <form onSubmit={handleSubmit} className="flex flex-col space-y-4 w-full max-w-sm">
-      <Input
-        type="text"
-        placeholder="Mensagem do PIX"
-        value={pixMessage}
-        onChange={(e) => setPixMessage(e.target.value)}
-        required
-        className="text-lg"
-      />
-      <Button type="submit" className="w-full">
-        Enviar PIX
-      </Button>
-    </form>
-      </div>
-    </>
-  );
+		// Limpar o input após o envio
+		setPixMessage("");
+	};
+
+	return (
+		<>
+			<Header />
+			<div className="w-full max-w-4xl mx-auto p-4 space-y-4">
+				<h1 className="text-2xl font-bold text-center mb-6">Pix Dashboard</h1>
+				<div className="grid gap-4 md:grid-cols-2">
+					<Card>
+						<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+							<CardTitle className="text-sm font-medium">Pix Enviados</CardTitle>
+							<Send className="h-4 w-4 text-muted-foreground" />
+						</CardHeader>
+						<CardContent>
+							<div className="text-2xl font-bold">{emailsSent}</div>
+							<Progress
+								value={(emailsSent / totalEmailCredits) * 100}
+								className="mt-2"
+							/>
+						</CardContent>
+					</Card>
+					<Card>
+						<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+							<CardTitle className="text-sm font-medium">
+								Disparos Disponivéis
+							</CardTitle>
+							<CreditCard className="h-4 w-4 text-muted-foreground" />
+						</CardHeader>
+						<CardContent>
+							<div className="text-2xl font-bold">{availableCredits}</div>
+							<p className="text-xs text-muted-foreground">
+               Do total de  {totalEmailCredits} Créditos
+							</p>
+						</CardContent>
+					</Card>
+				</div>
+				<Card>
+					<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+						<CardTitle className="text-sm font-medium">
+              Tendência de envio de Pix
+						</CardTitle>
+						<BarChartIcon className="h-4 w-4 text-muted-foreground" />
+					</CardHeader>
+					<CardContent>
+						<div className="h-[300px] w-full">
+							<ResponsiveContainer width="100%" height="100%">
+              <ChartContainer config={chartConfig}>
+
+								<BarChart data={chartData}>
+									<XAxis dataKey="name" />
+									<YAxis />
+									<Tooltip />
+									<Bar dataKey="emails" fill="var(--color-desktop)" radius={4}/>
+								</BarChart>
+                </ChartContainer>
+							</ResponsiveContainer>
+						</div>
+					</CardContent>
+				</Card>
+				<Card>
+					<CardHeader>
+						<CardTitle>Pix Rápido</CardTitle>
+					</CardHeader>
+					<CardContent>
+						<form 
+            className="flex space-x-2"
+            	onSubmit={handleSubmit}
+
+            >
+							<Input
+								type="text"
+								placeholder="Mensagem do PIX"
+								value={pixMessage}
+								onChange={(e) => setPixMessage(e.target.value)}
+								required
+								className="text-lg"
+							/>
+							<Button
+                type="submit"
+								disabled={!pixMessage.trim()}
+							>
+								<Send className="h-4 w-4 mr-2" />
+								Enviar Pix
+							</Button>
+						</form>
+					</CardContent>
+				</Card>
+			</div>
+		</>
+	);
 }
