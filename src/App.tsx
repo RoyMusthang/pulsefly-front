@@ -52,7 +52,6 @@ type User = {
 export default function Page() {
 	const emailsSent = Math.floor(Math.random() * (50000 - 123 + 1) + 123);
 	const totalEmailCredits = 50000;
-	const availableCredits = totalEmailCredits - emailsSent;
 	const [user, setUser] = useState<User|null>(null);
 	const [pixMessage, setPixMessage] = useState("");
 	const handleSubmit = async (e: React.FormEvent) => {
