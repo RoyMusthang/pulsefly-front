@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Button } from './ui/button';
 import Cookies from 'js-cookie';
 import { Sheet, SheetContent, SheetTrigger } from './ui/sheet';
@@ -7,13 +7,38 @@ import { CircleUser, Menu, Search } from "lucide-react"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from './ui/dropdown-menu';
 import { Separator } from './ui/separator';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
+import { useEffect } from 'react';
 
 const Header: React.FC = () => {
-
+	const navigate = useNavigate();
   const handleLogout = () => {
     Cookies.remove('access_token');
     window.location.href = '/login';
   };
+
+	useEffect(() => {
+    const parseJwt = (token: string) => {
+      const base64Url = token.split('.')[1];
+      const base64 = base64Url.replace(/-/g, "+").replace(/-/g, '/');
+      const jsonPayload = decodeURIComponent(window.atob(base64).split('').map((c) => {
+        return `%${('00' + c.charCodeAt(0).toString(16)).slice(-2)}`;
+
+      }).join(''))
+      return jsonPayload
+    }
+
+		const validateToken = async () => {
+			const token = Cookies.get("access_token");
+			if (!token) {
+				navigate("/login");
+				return;
+			}
+      localStorage.setItem('user', parseJwt(token))
+      
+		};
+
+		validateToken();
+	}, [navigate]);
 
   return (
     <header className="sticky top-0 flex h-16 items-center gap-4 border-b bg-background px-4 md:px-6">

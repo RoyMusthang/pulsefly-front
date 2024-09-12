@@ -1,4 +1,3 @@
-import { useNavigate } from "react-router-dom";
 import { Button } from "./components/ui/button";
 import Cookies from "js-cookie";
 import { useEffect, useState } from "react";
@@ -7,7 +6,7 @@ import { toast } from "./components/ui/use-toast";
 import { Input } from "./components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { BarChart as BarChartIcon, Mail, CreditCard, Send } from "lucide-react";
+import { BarChart as BarChartIcon, CreditCard, Send } from "lucide-react";
 import {
 	BarChart,
 	Bar,
@@ -30,33 +29,32 @@ const chartData = [
 ];
 
 const chartConfig = {
-  desktop: {
-    label: "Desktop",
-    color: "hsl(var(--chart-3))",
-  },
-  mobile: {
-    label: "Mobile",
-    color: "hsl(var(--chart-2))",
-  },
-} satisfies ChartConfig
+	desktop: {
+		label: "Desktop",
+		color: "hsl(var(--chart-3))",
+	},
+	mobile: {
+		label: "Mobile",
+		color: "hsl(var(--chart-2))",
+	},
+} satisfies ChartConfig;
+
+type User = {
+        id: string
+        name: string
+        email: string
+        password: string
+        created_at: string
+        updated_at: string
+        credit: number
+}
 
 export default function Page() {
 	const emailsSent = Math.floor(Math.random() * (50000 - 123 + 1) + 123);
 	const totalEmailCredits = 50000;
 	const availableCredits = totalEmailCredits - emailsSent;
-	const navigate = useNavigate();
+	const [user, setUser] = useState<User|null>(null);
 	const [pixMessage, setPixMessage] = useState("");
-	// biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
-	useEffect(() => {
-		const validateToken = async () => {
-			const token = Cookies.get("access_token");
-			if (!token) {
-				navigate("/login");
-				return;
-			}
-		};
-		validateToken();
-	}, []);
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
 
@@ -91,6 +89,32 @@ export default function Page() {
 		setPixMessage("");
 	};
 
+	const getCreditsByUser = async () => {
+		try {
+			const storedUser = localStorage.getItem("user");
+			if (storedUser) {
+				const user = JSON.parse(storedUser);
+				const response = await axios.get(
+					`${import.meta.env.VITE_BASE_URL}/user/${user.id}`,
+				{
+
+					headers: {
+						'Authorization': `Bearer ${Cookies.get('access_token')}`,
+					},
+				}
+				);
+				console.log(response.data.user)
+				setUser(response.data.user);
+			}
+		} catch (error) {
+			console.error("Failed to fetch user data", error);
+		}
+	};
+
+	// Effect to fetch user data on component mount
+	useEffect(() => {
+		getCreditsByUser();
+	}, []);
 	return (
 		<>
 			<Header />
@@ -99,7 +123,9 @@ export default function Page() {
 				<div className="grid gap-4 md:grid-cols-2">
 					<Card>
 						<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-							<CardTitle className="text-sm font-medium">Pix Enviados</CardTitle>
+							<CardTitle className="text-sm font-medium">
+								Pix Enviados
+							</CardTitle>
 							<Send className="h-4 w-4 text-muted-foreground" />
 						</CardHeader>
 						<CardContent>
@@ -118,9 +144,9 @@ export default function Page() {
 							<CreditCard className="h-4 w-4 text-muted-foreground" />
 						</CardHeader>
 						<CardContent>
-							<div className="text-2xl font-bold">{availableCredits}</div>
+							<div className="text-2xl font-bold">{user ? user?.credit : 0}</div>
 							<p className="text-xs text-muted-foreground">
-               Do total de  {totalEmailCredits} Créditos
+								Você pode adquirir mais a qualquer momento
 							</p>
 						</CardContent>
 					</Card>
@@ -128,22 +154,25 @@ export default function Page() {
 				<Card>
 					<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
 						<CardTitle className="text-sm font-medium">
-              Tendência de envio de Pix
+							Tendência de envio de Pix
 						</CardTitle>
 						<BarChartIcon className="h-4 w-4 text-muted-foreground" />
 					</CardHeader>
 					<CardContent>
 						<div className="h-[300px] w-full">
 							<ResponsiveContainer width="100%" height="100%">
-              <ChartContainer config={chartConfig}>
-
-								<BarChart data={chartData}>
-									<XAxis dataKey="name" />
-									<YAxis />
-									<Tooltip />
-									<Bar dataKey="emails" fill="var(--color-desktop)" radius={4}/>
-								</BarChart>
-                </ChartContainer>
+								<ChartContainer config={chartConfig}>
+									<BarChart data={chartData}>
+										<XAxis dataKey="name" />
+										<YAxis />
+										<Tooltip />
+										<Bar
+											dataKey="emails"
+											fill="var(--color-desktop)"
+											radius={4}
+										/>
+									</BarChart>
+								</ChartContainer>
 							</ResponsiveContainer>
 						</div>
 					</CardContent>
@@ -153,11 +182,7 @@ export default function Page() {
 						<CardTitle>Pix Rápido</CardTitle>
 					</CardHeader>
 					<CardContent>
-						<form 
-            className="flex space-x-2"
-            	onSubmit={handleSubmit}
-
-            >
+						<form className="flex space-x-2" onSubmit={handleSubmit}>
 							<Input
 								type="text"
 								placeholder="Mensagem do PIX"
@@ -166,10 +191,7 @@ export default function Page() {
 								required
 								className="text-lg"
 							/>
-							<Button
-                type="submit"
-								disabled={!pixMessage.trim()}
-							>
+							<Button type="submit" disabled={!pixMessage.trim()}>
 								<Send className="h-4 w-4 mr-2" />
 								Enviar Pix
 							</Button>
