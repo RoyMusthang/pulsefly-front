@@ -15,7 +15,7 @@ import {
 	Tooltip,
 	ResponsiveContainer,
 } from "recharts";
-import axios, { AxiosError } from "axios";
+import axios from "axios";
 import { ChartContainer, type ChartConfig } from "./components/ui/chart";
 import MultipleSelector, { Option } from "./components/ui/multiple-selector";
 import { Skeleton } from "./components/ui/skeleton";
@@ -97,8 +97,6 @@ export default function Page() {
         } else {
             errorMessage = error.message; // Exibe a mensagem padrão do Axios
         }
-    } else {
-        errorMessage = error.message; // Caso não seja um erro do Axios
     }
 
     toast({

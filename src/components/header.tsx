@@ -2,8 +2,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Button } from './ui/button';
 import Cookies from 'js-cookie';
 import { Sheet, SheetContent, SheetTrigger } from './ui/sheet';
-import { Input } from './ui/input';
-import { CircleUser, Menu, Search } from "lucide-react"
+import { CircleUser, Menu } from "lucide-react"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from './ui/dropdown-menu';
 import { Separator } from './ui/separator';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
