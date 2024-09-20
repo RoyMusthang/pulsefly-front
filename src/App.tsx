@@ -52,7 +52,7 @@ type User = {
 }
 
 export default function Page() {
-  const userData = JSON.parse(localStorage.getItem("user") || "");
+  const userData = JSON.parse(localStorage.getItem("user") || "{}");
 
 	const emailsSent = Math.floor(Math.random() * (50000 - 123 + 1) + 123);
 	const totalEmailCredits = 50000;
