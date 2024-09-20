@@ -81,7 +81,7 @@ export default function Page() {
 
 			toast({
 				title: "PIX Enviado",
-				description: "Valor de R$ 00.1 enviado com sucesso!",
+				description: "Enviado com sucesso!",
 			});
 			console.log(response.data);
 		} catch (error) {
