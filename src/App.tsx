@@ -15,8 +15,10 @@ import {
 	Tooltip,
 	ResponsiveContainer,
 } from "recharts";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { ChartContainer, type ChartConfig } from "./components/ui/chart";
+import MultipleSelector, { Option } from "./components/ui/multiple-selector";
+import { Skeleton } from "./components/ui/skeleton";
 
 const chartData = [
 	{ name: "Mon", emails: 120, fill: "var(--color-desktop)" },
@@ -50,8 +52,12 @@ type User = {
 }
 
 export default function Page() {
+  const userData = JSON.parse(localStorage.getItem("user") || "");
+
 	const emailsSent = Math.floor(Math.random() * (50000 - 123 + 1) + 123);
 	const totalEmailCredits = 50000;
+  const [tags, setTags] = useState<Option[]>([])
+  const [tagUsed, setTagUsed] = useState<any[]>([])
 	const [user, setUser] = useState<User|null>(null);
 	const [pixMessage, setPixMessage] = useState("");
 	const handleSubmit = async (e: React.FormEvent) => {
@@ -63,6 +69,8 @@ export default function Page() {
 				`${import.meta.env.VITE_BASE_URL}/pix/`,
 				{
 					message: pixMessage,
+					tags: tagUsed
+
 				},
 				{
 					headers: {
@@ -77,16 +85,52 @@ export default function Page() {
 			});
 			console.log(response.data);
 		} catch (error) {
-			toast({
-				title: "PIX erro",
-				description: "falhou!",
-			});
-			console.log(error);
-		}
+    console.log("Error received:", error);
+
+    let errorMessage = "Erro desconhecido";
+
+    // Verifique se é um erro do Axios e se a resposta contém uma mensagem de erro
+    if (axios.isAxiosError(error)) {
+        if (error.response && error.response.data) {
+            // Supondo que o backend envia a mensagem de erro em error.response.data.Mensagem
+            errorMessage = error.response.data.error || "Erro na requisição";
+        } else {
+            errorMessage = error.message; // Exibe a mensagem padrão do Axios
+        }
+    } else {
+        errorMessage = error.message; // Caso não seja um erro do Axios
+    }
+
+    toast({
+        title: "PIX erro",
+        description: errorMessage,
+        duration: 5000,
+    });
+
+    console.log(error);
+}
 
 		// Limpar o input após o envio
 		setPixMessage("");
 	};
+useEffect(() => {
+    const getTags = async () => {
+      try {
+        const response = await axios.get(
+          `${import.meta.env.VITE_BASE_URL}/lead/tags/${userData.id}`,
+          {
+            headers: {
+              'Authorization': `Bearer ${Cookies.get('access_token')}`,
+            },
+          }
+        );
+        setTags(response.data);  // Certifique-se que o endpoint retorna um objeto com uma chave 'leads'
+      } catch (error) {
+        console.error("Erro ao carregar leads:", error);
+      }
+    }
+    getTags()
+  }, [userData.id])
 
 	const getCreditsByUser = async () => {
 		try {
@@ -190,6 +234,27 @@ export default function Page() {
 								required
 								className="text-lg"
 							/>
+ {
+            tags?.length > 0 ? (
+
+              <MultipleSelector
+                defaultOptions={tags}
+                options={tags}
+                value={tags}
+                onChange={(selectedOptions) => setTagUsed(selectedOptions.map(option => option.value))}
+                placeholder="Selecione suas tags"
+                emptyIndicator={
+                  <p className="text-center text-lg leading-10 text-gray-600 dark:text-gray-400">
+                    Sem tags encontradas
+                  </p>
+                }
+              />
+			 ) : (
+              <div className="gap-4">
+                <Skeleton className="h-8 w-[180px]" />
+              </div>
+			 )
+          }
 							<Button type="submit" disabled={!pixMessage.trim()}>
 								<Send className="h-4 w-4 mr-2" />
 								Enviar Pix

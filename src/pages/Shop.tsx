@@ -15,6 +15,7 @@ import axios from "axios";
 import {
 	Dialog,
 	DialogContent,
+	DialogTitle,
 	DialogTrigger,
 } from "@/components/ui/dialog";
 import { QRCodeSVG } from "qrcode.react"; // Importando a biblioteca de QR Code
@@ -22,24 +23,69 @@ import { LoadingSpinner } from "@/components/loading-spinner";
 
 export default function Shop() {
 	const navigate = useNavigate();
-	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+	const user = JSON.parse(localStorage.getItem("user") || "");
+
 	const [pixResponse, setPixResponse] = useState<any>(null); // Estado para armazenar a resposta do PIX
+	const [products, setProducts] = useState([]);
+	const [paymentStatus, setPaymentStatus] = useState(null);
+	const [popupIsOpen, setPopupIsOpen] = useState(false);
 
-	const planos = [
-		{ id: 1, name: "Basic", value: 30, quantity: 1000 },
-		{ id: 2, name: "Hobby", value: 50, quantity: 2000 },
-		{ id: 3, name: "Pro", value: 100, quantity: 5000 },
-		{ id: 4, name: "Enterprise", value: 180, quantity: 10000 },
-		{ id: 5, name: "Business", value: 320, quantity: 20000 },
-	];
+	useEffect(() => {
+		// Função para verificar o status do pagamento
+		const checkPaymentStatus = async () => {
+			try {
+				const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/pix/${pixResponse.transaction_id}`, {
+					headers: {
+						'Authorization': `Bearer ${Cookies.get('access_token')}`,
+					},
+				});
+				setPaymentStatus(response.data.status); // Supondo que a API retorne o status
+			} catch (error) {
+				console.error("Erro ao verificar status de pagamento:", error);
+			}
+		};
 
-	const handleBuy = async (e: number) => {
-		setPixResponse(null)
+		// Verifica o status do pagamento a cada 5 segundos
+		const intervalId = setInterval(() => {
+			if (pixResponse) {
+				checkPaymentStatus();
+			}
+		}, 5000); // Checa a cada 5 segundos
+
+		// Limpa o intervalo quando o componente for desmontado
+		return () => clearInterval(intervalId);
+	}, [pixResponse]);
+
+	useEffect(() => {
+		const getProducts = async () => {
+			try {
+				const response = await axios.get(
+					`${import.meta.env.VITE_BASE_URL}/product/`,
+					{
+						headers: {
+							'Authorization': `Bearer ${Cookies.get('access_token')}`,
+						},
+					}
+				);
+				setProducts(response.data);
+			} catch (error) {
+				console.error("Erro ao carregar produtos:", error);
+			}
+		};
+
+		getProducts();
+	}, []);
+
+	const handleBuy = async (product: any) => {
+		setPopupIsOpen(true);
+		setPixResponse(null);
+		console.log(product);
 		try {
 			const response = await axios.post(
 				`${import.meta.env.VITE_BASE_URL}/pix/cob`,
 				{
-					value: e.toFixed(2),
+					product_id: product.id,
+					user_id: user.id,
 				},
 				{
 					headers: {
@@ -50,9 +96,15 @@ export default function Shop() {
 				},
 			);
 			setPixResponse(response.data);
- 		} catch (error) {
+		} catch (error) {
 			console.error("Erro ao efetuar compra:", error);
 		}
+	};
+
+	const closeShop = () => {
+		setPaymentStatus(null);
+		setPixResponse(null);
+		setPopupIsOpen(false);
 	};
 
 	useEffect(() => {
@@ -81,17 +133,17 @@ export default function Shop() {
 						</p>
 					</div>
 					<div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-						{planos.map((e) => (
+						{products.map((product: any) => (
 							<Card
 								className="bg-card text-card-foreground shadow-lg"
-								key={e.id}
+								key={product.id}
 							>
 								<CardHeader>
-									<CardTitle className="text-2xl font-bold">{e.name}</CardTitle>
+									<CardTitle className="text-2xl font-bold">{product.name}</CardTitle>
 									<div className="text-4xl font-bold">
-										R${e.value}
+										R${product.amount}
 										<span className="text-lg font-normal">
-											/{e.quantity} disparos
+											/{product.shooting} disparos
 										</span>
 									</div>
 								</CardHeader>
@@ -115,45 +167,57 @@ export default function Shop() {
 									</ul>
 								</CardContent>
 								<CardFooter>
-									<Dialog>
+									<Dialog open={popupIsOpen}>
 										<DialogTrigger asChild>
-											<Button onClick={() => handleBuy(e.value)} className="w-full">Comprar</Button>
+											<Button onClick={() => handleBuy(product)} className="w-full">Comprar</Button>
 										</DialogTrigger>
 										<DialogContent className="sm:max-w-[425px]">
+											<DialogTitle>Compra</DialogTitle>
 											<div className="flex flex-col items-center justify-center gap-4 py-8">
 												{pixResponse ? (
 													<div className="mt-4 flex-col flex items-center justify-center gap-4">
-														<div className="flex flex-col items-center">
-															<h3 className="text-lg font-bold mt-4">
-																QR Code:
-															</h3>
-															<QRCodeSVG
-																value={pixResponse.pixCopiaECola}
-																size={200}
-															/>
-														</div>
-														<div className="flex flex-col items-center">
-															<h3 className="text-lg font-bold">
-																Pix Copia e Cola:
-															</h3>
-															<div className="w-96 bg-gray-100 p-2 rounded">
-																<p className="overflow-auto break-word">
-																	{pixResponse.pixCopiaECola}
-																</p>
+														{paymentStatus === 'PAID' ? (
+															<div className="text-center">
+																<h3 className="text-lg font-bold">Pagamento confirmado!</h3>
+																<Button onClick={() => closeShop()}>
+																	Fechar
+																</Button>
 															</div>
-															<Button
-																className="mt-2 p-2"
-																onClick={() =>
-																	navigator.clipboard.writeText(
-																		pixResponse.pixCopiaECola,
-																	)
-																}
-															>
-																Copiar
-															</Button>
-														</div>
+														) : (
+															<>
+																<div className="flex flex-col items-center">
+																	<h3 className="text-lg font-bold mt-4">QR Code:</h3>
+																	<QRCodeSVG value={pixResponse.pixCopiaECola} size={200} />
+																</div>
+																<div className="flex flex-col items-center">
+																	<h3 className="text-lg font-bold">Pix Copia e Cola:</h3>
+																	<div className="w-96 bg-gray-100 p-2 rounded">
+																		<p className="overflow-auto break-word">
+																			{pixResponse.pixCopiaECola}
+																		</p>
+																	</div>
+																	<Button
+																		className="mt-2 p-2"
+																		onClick={() =>
+																			navigator.clipboard.writeText(
+																				pixResponse.pixCopiaECola,
+																			)
+																		}
+																	>
+																		Copiar
+																	</Button>
+																	<Button
+																		onClick={() => closeShop()}
+																	>
+																		Fechar
+																	</Button>
+																</div>
+															</>
+														)}
 													</div>
-												): <LoadingSpinner />}
+												) : (
+													<LoadingSpinner />
+												)}
 											</div>
 										</DialogContent>
 									</Dialog>

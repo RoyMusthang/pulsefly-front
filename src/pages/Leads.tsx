@@ -11,14 +11,16 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { UploadIcon, FileIcon, CheckCircleIcon } from 'lucide-react'
 import { Progress } from "@/components/ui/progress"
 import axios from "axios";
+import { Label } from "@/components/ui/label";
 
-const CHUNK_SIZE = 1024 * 1024 * 0.1; // 0.5MB chunks
+const CHUNK_SIZE = 1024 * 1024 * 0.001; // 0.5MB chunks
 
 export default function Leads() {
   const [file, setFile] = useState<File | null>(null)
   const [isUploading, setIsUploading] = useState(false)
   const [uploadProgress, setUploadProgress] = useState(0)
   const [uploadComplete, setUploadComplete] = useState(false)
+  const [tag, setTag] = useState("")
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -70,8 +72,8 @@ export default function Leads() {
     formData.append('file', new Blob([chunk], { type: 'text/csv' }), `chunk-${chunkIndex}`);
     formData.append('chunkIndex', chunkIndex.toString());
     formData.append('totalChunks', totalChunks.toString());
-
-    const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/lead`, formData, {
+console.log("tga", tag)
+    const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/lead/${tag}`, formData, {
       headers: {
         'Authorization': `Bearer ${Cookies.get('access_token')}`,
         'Content-Type': 'multipart/form-data'
@@ -83,7 +85,7 @@ export default function Leads() {
     }
 
     return response.data;
-  }, []);
+  }, [tag]);
 
   const handleSubmit = useCallback(async () => {
     if (!file) {
@@ -136,6 +138,19 @@ export default function Leads() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
+              <div className="space-x-4">
+                <Label htmlFor="tag" className="text-sm font-medium">
+                 TAG 
+                <Input
+                  id="tag"
+									type="text"
+									placeholder="Tag do seus leads"
+									value={tag}
+									onChange={(e) => setTag(e.target.value)}
+                  />
+
+                </Label>
+              </div>
               <div className="flex items-center space-x-4">
                 <Input
                   type="file"
