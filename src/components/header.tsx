@@ -16,6 +16,13 @@ const Header: React.FC = () => {
     window.location.href = '/login';
   };
 
+  useEffect(() => {
+    const user = localStorage.getItem("user");
+    if (!Cookies.get('access_token') && !user) {
+      navigate('/login');
+    }
+  }, [navigate])
+
 	useEffect(() => {
     const parseJwt = (token: string) => {
       const base64Url = token.split('.')[1];
