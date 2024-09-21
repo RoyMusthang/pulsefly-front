@@ -96,22 +96,28 @@ export function Control() {
         <h1 className="text-2xl font-bold">Registros</h1>
         <div className="flex items-center gap-2">
           {
-            tags.length >= 1 ?
+            !tags ?
 
-              <MultipleSelector
-                defaultOptions={tags}
-                options={tags}
-                value={tags}
-                onChange={(selectedOptions) => setTagUsed(selectedOptions.map(option => option.value))}
-                placeholder="Selecione suas tags"
-                emptyIndicator={
-                  <p className="text-center text-lg leading-10 text-gray-600 dark:text-gray-400">
-                    Sem tags encontradas
-                  </p>
-                }
-              />
-              :
               <div className="gap-4">
+                <Skeleton className="h-8 w-[200px]" />
+              </div>
+              :
+              tags.length > 0 ?
+
+                <MultipleSelector
+                  defaultOptions={tags}
+                  options={tags}
+                  value={tags}
+                  onChange={(selectedOptions) => setTagUsed(selectedOptions.map(option => option.value))}
+                  placeholder="Selecione suas tags"
+                  emptyIndicator={
+                    <p className="text-center text-lg leading-10 text-gray-600 dark:text-gray-400">
+                      Nenhuma tag encontrada
+                    </p>
+                  }
+                />
+                :
+               <div className="gap-4">
                 <Skeleton className="h-8 w-[200px]" />
               </div>
           }
