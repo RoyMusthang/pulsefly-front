@@ -17,7 +17,7 @@ import {
 } from "recharts";
 import axios from "axios";
 import { ChartContainer, type ChartConfig } from "./components/ui/chart";
-import MultipleSelector, { Option } from "./components/ui/multiple-selector";
+import MultipleSelector, { type Option } from "./components/ui/multiple-selector";
 import { Skeleton } from "./components/ui/skeleton";
 
 const chartData = [

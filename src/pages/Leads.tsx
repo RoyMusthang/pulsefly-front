@@ -16,12 +16,12 @@ import { Label } from "@/components/ui/label";
 const CHUNK_SIZE = 1024 * 1024 * 0.001; // 0.5MB chunks
 
 export default function Leads() {
+	const navigate = useNavigate();
   const [file, setFile] = useState<File | null>(null)
   const [isUploading, setIsUploading] = useState(false)
   const [uploadProgress, setUploadProgress] = useState(0)
   const [uploadComplete, setUploadComplete] = useState(false)
   const [tag, setTag] = useState("")
-  const navigate = useNavigate();
 
   useEffect(() => {
     const validateToken = async () => {

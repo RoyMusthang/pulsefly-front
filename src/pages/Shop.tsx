@@ -23,7 +23,15 @@ import { LoadingSpinner } from "@/components/loading-spinner";
 
 export default function Shop() {
 	const navigate = useNavigate();
-	const user = JSON.parse(localStorage.getItem("user") || "");
+
+
+  useEffect(() => {
+    const user = localStorage.getItem("user");
+    if (!Cookies.get('access_token') && !user) {
+      navigate('/login');
+    }
+  }, [navigate])
+	const user = JSON.parse(localStorage.getItem("user") || "{}");
 
 	const [pixResponse, setPixResponse] = useState<any>(null); // Estado para armazenar a resposta do PIX
 	const [products, setProducts] = useState([]);

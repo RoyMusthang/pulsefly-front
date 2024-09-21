@@ -7,6 +7,12 @@ export default function Settings() {
   const navigate = useNavigate();
 
   useEffect(() => {
+    const user = localStorage.getItem("user");
+    if (!Cookies.get('access_token') && !user) {
+      navigate('/login');
+    }
+  }, [navigate])
+  useEffect(() => {
     const validateToken = async () => {
       const token = Cookies.get("access_token");
       if (!token) {

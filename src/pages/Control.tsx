@@ -10,9 +10,10 @@ import axios from "axios"
 import MultipleSelector, { type Option } from "@/components/ui/multiple-selector"
 import { Filter } from "lucide-react"
 import { Skeleton } from "@/components/ui/skeleton"
+import { useNavigate } from "react-router-dom"
 
 export function Control() {
-  const user = JSON.parse(localStorage.getItem("user") || "");
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
   const [page, setPage] = useState(1)
   const [pageSize, setPageSize] = useState(10)
   const [sortColumn, setSortColumn] = useState("id")
@@ -20,6 +21,14 @@ export function Control() {
   const [data, setData] = useState<any[]>([])
   const [tags, setTags] = useState<Option[]>([])
   const [tagUsed, setTagUsed] = useState<any[]>([])
+
+	const navigate = useNavigate();
+  useEffect(() => {
+    const user = localStorage.getItem("user");
+    if (!Cookies.get('access_token') && !user) {
+      navigate('/login');
+    }
+  }, [navigate])
 
   useEffect(() => {
     const getData = async () => {
@@ -42,6 +51,13 @@ export function Control() {
 
     getData();
   }, [page, pageSize, tagUsed, user.id]);
+  useEffect(() => {
+    const user = localStorage.getItem("user");
+    if (!Cookies.get('access_token') && !user) {
+      navigate('/login');
+    }
+  }, [navigate])
+
 
   useEffect(() => {
     const getTags = async () => {
