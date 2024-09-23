@@ -1,14 +1,11 @@
 import * as React from "react"
 import {
-  ChevronLeftIcon,
-  ChevronRightIcon,
   DotsHorizontalIcon,
-  TrackPreviousIcon,
 } from "@radix-ui/react-icons"
 
 import { cn } from "@/lib/utils"
 import { ButtonProps, buttonVariants } from "@/components/ui/button"
-import { ChevronsLeftIcon, ChevronsLeftRightIcon, ChevronsRightIcon } from "lucide-react"
+import { ChevronsLeftIcon, ChevronsRightIcon } from "lucide-react"
 
 const Pagination = ({ className, ...props }: React.ComponentProps<"nav">) => (
   <nav
