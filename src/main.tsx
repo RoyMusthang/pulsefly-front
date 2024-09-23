@@ -6,9 +6,8 @@ import "./index.css";
 import { Login } from "./pages/Login.tsx";
 import { Register } from "./pages/Register.tsx";
 import { Toaster } from "@/components/ui/toaster"
-import Leads from "./pages/Leads.tsx";
 import Shop from "./pages/Shop.tsx";
-import {Control} from "./pages/Control.tsx";
+import { Leads } from "./pages/Leads.tsx";
 import Settings from "./pages/Setting.tsx";
 
 const route = createBrowserRouter([
@@ -35,13 +34,7 @@ const route = createBrowserRouter([
 	{
 		path: "/settings",
 		element: <Settings />,
-	},
-	{
-		path: "/control",
-		element: <Control />
-	}
-
-]);
+	}]);
 
 // biome-ignore lint/style/noNonNullAssertion: <explanation>
 createRoot(document.getElementById("root")!).render(

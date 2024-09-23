@@ -204,21 +204,25 @@ export default function Shop() {
 																			{pixResponse.pixCopiaECola}
 																		</p>
 																	</div>
-																	<Button
-																		className="mt-2 p-2"
-																		onClick={() =>
-																			navigator.clipboard.writeText(
-																				pixResponse.pixCopiaECola,
-																			)
-																		}
-																	>
-																		Copiar
-																	</Button>
-																	<Button
-																		onClick={() => closeShop()}
-																	>
-																		Fechar
-																	</Button>
+																	<div className="flex align-baseline gap-6 justify-between">
+
+																		<Button
+																			className="mt-2 p-2"
+																			onClick={() =>
+																				navigator.clipboard.writeText(
+																					pixResponse.pixCopiaECola,
+																				)
+																			}
+																		>
+																			Copiar
+																		</Button>
+																		<Button
+																			className="mt-2 p-2"
+																			onClick={() => closeShop()}
+																		>
+																			Fechar
+																		</Button>
+																	</div>
 																</div>
 															</>
 														)}

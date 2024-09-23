@@ -36,6 +36,7 @@ const Header: React.FC = () => {
 
 		const validateToken = async () => {
 			const token = Cookies.get("access_token");
+   //veja se o token e nao está expirado
 			if (!token) {
 				navigate("/login");
 				return;
@@ -77,13 +78,7 @@ const Header: React.FC = () => {
         >
           Leads
         </Link>
-        <Separator orientation="vertical" />
-        <Link
-          to="/control"
-          className="text-muted-foreground transition-colors hover:text-foreground"
-        >
-          Controle de Lead
-        </Link>
+        
       </nav>
       <Sheet>
         <SheetTrigger asChild>
@@ -157,7 +152,7 @@ const Header: React.FC = () => {
               </Link>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={handleLogout}>Logout</DropdownMenuItem>
+            <DropdownMenuItem onClick={handleLogout}>Sair</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>

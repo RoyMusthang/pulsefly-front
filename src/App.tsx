@@ -5,7 +5,6 @@ import Header from "./components/header";
 import { toast } from "./components/ui/use-toast";
 import { Input } from "./components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
 import { BarChart as BarChartIcon, CreditCard, Send } from "lucide-react";
 import {
 	BarChart,
@@ -19,27 +18,9 @@ import axios from "axios";
 import { ChartContainer, type ChartConfig } from "./components/ui/chart";
 import MultipleSelector, { type Option } from "./components/ui/multiple-selector";
 import { Skeleton } from "./components/ui/skeleton";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "./components/ui/dialog";
 
-const chartData = [
-	{ name: "Mon", emails: 120, fill: "var(--color-desktop)" },
-	{ name: "Tue", emails: 200, fill: "var(--color-desktop)" },
-	{ name: "Wed", emails: 150, fill: "var(--color-desktop)" },
-	{ name: "Thu", emails: 80, fill: "var(--color-desktop)" },
-	{ name: "Fri", emails: 170, fill: "var(--color-desktop)" },
-	{ name: "Sat", emails: 50, fill: "var(--color-desktop)" },
-	{ name: "Sun", emails: 30, fill: "var(--color-desktop)" },
-];
 
-const chartConfig = {
-	desktop: {
-		label: "Desktop",
-		color: "hsl(var(--chart-3))",
-	},
-	mobile: {
-		label: "Mobile",
-		color: "hsl(var(--chart-2))",
-	},
-} satisfies ChartConfig;
 
 type User = {
         id: string
@@ -54,12 +35,26 @@ type User = {
 export default function Page() {
   const userData = JSON.parse(localStorage.getItem("user") || "{}");
 
-	const emailsSent = Math.floor(Math.random() * (50000 - 123 + 1) + 123);
-	const totalEmailCredits = 50000;
+
   const [tags, setTags] = useState<Option[]>([])
   const [tagUsed, setTagUsed] = useState<any[]>([])
 	const [user, setUser] = useState<User|null>(null);
 	const [pixMessage, setPixMessage] = useState("");
+	const [shootings, setShootings] = useState<any[]>([]);
+
+
+
+	const chartConfig = {
+		desktop: {
+			label: "Desktop",
+			color: "hsl(var(--chart-3))",
+		},
+		mobile: {
+			label: "Mobile",
+			color: "hsl(var(--chart-2))",
+		},
+	} satisfies ChartConfig;
+
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
 
@@ -107,13 +102,14 @@ export default function Page() {
 
     console.log(error);
 }
-
 		// Limpar o input após o envio
 		setPixMessage("");
 	};
-useEffect(() => {
+	useEffect(() => {
     const getTags = async () => {
       try {
+		const storedUser = localStorage.getItem("user");
+			if (storedUser) {
         const response = await axios.get(
           `${import.meta.env.VITE_BASE_URL}/lead/tags/${userData.id}`,
           {
@@ -123,11 +119,44 @@ useEffect(() => {
           }
         );
         setTags(response.data);  // Certifique-se que o endpoint retorna um objeto com uma chave 'leads'
+	}
       } catch (error) {
         console.error("Erro ao carregar leads:", error);
       }
+			
     }
     getTags()
+  }, [userData.id])
+
+	useEffect(() => {
+    const getShootings = async () => {
+      try {
+		const storedUser = localStorage.getItem("user");
+			if (storedUser) {
+        const response = await axios.get(
+          `${import.meta.env.VITE_BASE_URL}/user/shootings/${userData.id}`,
+          {
+            headers: {
+              'Authorization': `Bearer ${Cookies.get('access_token')}`,
+            },
+          }
+        );
+		const aggregatedShootings = response.data.reduce((acc: any, shooting: any) => {
+			const day = shooting.week.substring(0, 3);
+			if (!acc[day]) {
+				acc[day] = {name: day, shooting: 0, fill: "var(--color-desktop)"};
+			}
+			acc[day].shooting += shooting.quantity;
+			return acc;
+		}, {})
+		const transformedShootings = Object.values(aggregatedShootings);
+		setShootings(transformedShootings);
+	}
+      } catch (error) {
+        console.error("Erro ao carregar shootings:", error);
+      }
+    }
+    getShootings()
   }, [userData.id])
 
 	const getCreditsByUser = async () => {
@@ -144,7 +173,6 @@ useEffect(() => {
 					},
 				}
 				);
-				console.log(response.data.user)
 				setUser(response.data.user);
 			}
 		} catch (error) {
@@ -160,7 +188,67 @@ useEffect(() => {
 		<>
 			<Header />
 			<div className="w-full max-w-4xl mx-auto p-4 space-y-4">
-				<h1 className="text-2xl font-bold text-center mb-6">Pix Dashboard</h1>
+				{/* quero no css o h1 no meio e o botão no final */}
+
+				<div className="flex justify-between">
+					<div className="w-20"/>
+					<h1 className="text-3xl font-bold">Painel</h1>
+					<Dialog>
+						<DialogTrigger asChild>
+							<Button variant="outline">Novo Pix</Button>
+						</DialogTrigger>
+						<DialogContent>
+							<DialogHeader>
+
+							<DialogTitle>Novo Pix</DialogTitle>
+							<DialogDescription>
+								Coloque a mensagem para seus contatos e escolha as suas tags
+							</DialogDescription>
+							</DialogHeader>
+						<form className="space-y-4 w-full max-w-md mx-auto p-4" onSubmit={handleSubmit}>
+							<Input
+								type="text"
+								placeholder="Mensagem do PIX"
+								value={pixMessage}
+								onChange={(e) => setPixMessage(e.target.value)}
+								required
+								className="text-lg"
+							/>
+							{
+            tags === undefined || tags === null ? ( // Verifica se `tags` está indefinido ou nulo
+              <div className="gap-4">
+                <Skeleton className="h-8 w-[200px]" />
+              </div>
+            ) : tags.length > 0 ? ( // Se `tags` estiver carregado e contiver itens
+              <MultipleSelector
+                defaultOptions={tags}
+                options={tags}
+                value={tags}
+                className="w-80"
+                onChange={(selectedOptions) => setTagUsed(selectedOptions.map(option => option.value))}
+                placeholder="Selecione suas tags"
+                emptyIndicator={
+                  <p className="text-center text-lg leading-10 text-gray-600 dark:text-gray-400">
+                    Nenhuma tag encontrada
+                  </p>
+                }
+              />
+            ) : ( // Se `tags` estiver carregado, mas estiver vazio
+              <div className="gap-4 w-60 border border-solid border-gray-300 rounded">
+                <p className="text-center text-lg leading-10 text-gray-600 dark:text-gray-400">
+                  Nenhuma tag disponível
+                </p>
+              </div>
+            )
+          }
+							<Button type="submit" disabled={!pixMessage.trim()}>
+								<Send className="h-4 w-4 mr-2" />
+								Enviar Pix
+							</Button>
+						</form>
+						</DialogContent>
+					</Dialog>
+				</div>
 				<div className="grid gap-4 md:grid-cols-2">
 					<Card>
 						<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -170,11 +258,7 @@ useEffect(() => {
 							<Send className="h-4 w-4 text-muted-foreground" />
 						</CardHeader>
 						<CardContent>
-							<div className="text-2xl font-bold">{emailsSent}</div>
-							<Progress
-								value={(emailsSent / totalEmailCredits) * 100}
-								className="mt-2"
-							/>
+							<div className="text-2xl font-bold">{!shootings ? 0 : shootings.reduce((total, shooting) => total + shooting.shooting, 0)}</div>
 						</CardContent>
 					</Card>
 					<Card>
@@ -203,12 +287,12 @@ useEffect(() => {
 						<div className="h-[300px] w-full">
 							<ResponsiveContainer width="100%" height="100%">
 								<ChartContainer config={chartConfig}>
-									<BarChart data={chartData}>
+									<BarChart data={shootings}>
 										<XAxis dataKey="name" />
 										<YAxis />
 										<Tooltip />
 										<Bar
-											dataKey="emails"
+											dataKey="shooting"
 											fill="var(--color-desktop)"
 											radius={4}
 										/>
@@ -216,48 +300,6 @@ useEffect(() => {
 								</ChartContainer>
 							</ResponsiveContainer>
 						</div>
-					</CardContent>
-				</Card>
-				<Card>
-					<CardHeader>
-						<CardTitle>Pix Rápido</CardTitle>
-					</CardHeader>
-					<CardContent>
-						<form className="flex space-x-2" onSubmit={handleSubmit}>
-							<Input
-								type="text"
-								placeholder="Mensagem do PIX"
-								value={pixMessage}
-								onChange={(e) => setPixMessage(e.target.value)}
-								required
-								className="text-lg"
-							/>
- {
-            tags?.length > 0 ? (
-
-              <MultipleSelector
-                defaultOptions={tags}
-                options={tags}
-                value={tags}
-                onChange={(selectedOptions) => setTagUsed(selectedOptions.map(option => option.value))}
-                placeholder="Selecione suas tags"
-                emptyIndicator={
-                  <p className="text-center text-lg leading-10 text-gray-600 dark:text-gray-400">
-                    Sem tags encontradas
-                  </p>
-                }
-              />
-			 ) : (
-              <div className="gap-4">
-                <Skeleton className="h-8 w-[180px]" />
-              </div>
-			 )
-          }
-							<Button type="submit" disabled={!pixMessage.trim()}>
-								<Send className="h-4 w-4 mr-2" />
-								Enviar Pix
-							</Button>
-						</form>
 					</CardContent>
 				</Card>
 			</div>
