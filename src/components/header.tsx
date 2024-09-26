@@ -6,6 +6,7 @@ import { CircleUser, Menu } from "lucide-react"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from './ui/dropdown-menu';
 import { Separator } from './ui/separator';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
+import {jwtDecode} from 'jwt-decode';
 import { useEffect } from 'react';
 
 const Header: React.FC = () => {
@@ -17,10 +18,28 @@ const Header: React.FC = () => {
   };
 
   useEffect(() => {
-    const user = localStorage.getItem("user");
-    if (!Cookies.get('access_token') && !user) {
+    function validateToken(token: string) {
+  try {
+    const decodedToken = jwtDecode(token);
+    const currentTime = Date.now() / 1000; // Get current time in seconds
+    if (!decodedToken) {
       navigate('/login');
     }
+
+    // Check if the token has expired
+    if (!decodedToken?.exp || decodedToken.exp < currentTime) {
+
+      Cookies.remove('access_token');
+      return false; // Token has expired
+    }
+
+    return true; // Token is valid
+  } catch (error) {
+    console.error('Error decoding token:', error);
+    return false; // Token is invalid
+  }
+}
+validateToken(Cookies.get('access_token'))
   }, [navigate])
 
 	useEffect(() => {
@@ -36,6 +55,7 @@ const Header: React.FC = () => {
 
 		const validateToken = async () => {
 			const token = Cookies.get("access_token");
+      // valide se o token e valido com a lib jwt
    //veja se o token e nao está expirado
 			if (!token) {
 				navigate("/login");

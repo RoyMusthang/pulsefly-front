@@ -10,7 +10,7 @@ import {
 	CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { CheckIcon } from "lucide-react";
+import { CheckCircle2, CheckIcon } from "lucide-react";
 import axios from "axios";
 import {
 	Dialog,
@@ -87,7 +87,6 @@ export default function Shop() {
 	const handleBuy = async (product: any) => {
 		setPopupIsOpen(true);
 		setPixResponse(null);
-		console.log(product);
 		try {
 			const response = await axios.post(
 				`${import.meta.env.VITE_BASE_URL}/pix/cob`,
@@ -186,7 +185,12 @@ export default function Shop() {
 													<div className="mt-4 flex-col flex items-center justify-center gap-4">
 														{paymentStatus === 'PAID' ? (
 															<div className="text-center">
-																<h3 className="text-lg font-bold">Pagamento confirmado!</h3>
+<div className="flex flex-col items-center justify-center gap-4 py-8">
+          <CheckCircle2 className="h-16 w-16 text-green-500" />
+          <p className="text-lg font-medium text-center">
+           Disparos adicionados com sucesso!
+          </p>
+        </div>
 																<Button onClick={() => closeShop()}>
 																	Fechar
 																</Button>
