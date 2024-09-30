@@ -26,9 +26,7 @@ export function Shootings() {
     const userData = JSON.parse(localStorage.getItem("user") || "{}");
 	const {tags, setTags } = useTagsStore();
   const [tagUsed, setTagUsed] = useState<any[]>([])
-	const [user, setUser] = useState<User|null>(null);
 	const [pixMessage, setPixMessage] = useState("");
-	const [shootings, setShootings] = useState<any[]>([]);
 const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
 

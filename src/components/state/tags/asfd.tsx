@@ -7,9 +7,9 @@ interface tagsState {
   setTags: (tags: Option[]) => void
 }
 
-export const useTagsStore = create<tagsState>()(zukeeper((set: any) => ({
+export const useTagsStore: any = create<tagsState>()(zukeeper((set: any) => ({
   tags: [],
-  setTags: (tags: Option) => set(({ tags })),
+  setTags: (tags: Option[]) => set(() => ({ tags })),
 })))
 
-window.store = useTagsStore;
+window.Storage = useTagsStore;
