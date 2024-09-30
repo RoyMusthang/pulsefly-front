@@ -16,9 +16,10 @@ import {
 } from "recharts";
 import axios from "axios";
 import { ChartContainer, type ChartConfig } from "./components/ui/chart";
-import MultipleSelector, { type Option } from "./components/ui/multiple-selector";
+import MultipleSelector from "./components/ui/multiple-selector";
 import { Skeleton } from "./components/ui/skeleton";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "./components/ui/dialog";
+import { useTagsStore } from "./components/state/tags/asfd";
 
 
 
@@ -34,9 +35,7 @@ type User = {
 
 export default function Page() {
   const userData = JSON.parse(localStorage.getItem("user") || "{}");
-
-
-  const [tags, setTags] = useState<Option[]>([])
+	const {tags, setTags } = useTagsStore();
   const [tagUsed, setTagUsed] = useState<any[]>([])
 	const [user, setUser] = useState<User|null>(null);
 	const [pixMessage, setPixMessage] = useState("");
@@ -182,6 +181,7 @@ export default function Page() {
 
 	// Effect to fetch user data on component mount
 	useEffect(() => {
+
 		getCreditsByUser();
 	}, []);
 	return (
@@ -193,6 +193,7 @@ export default function Page() {
 				<div className="flex justify-between">
 					<div className="w-20"/>
 					<h1 className="text-3xl font-bold">Painel</h1>
+					
 					<Dialog>
 						<DialogTrigger asChild>
 							<Button variant="outline">Novo Pix</Button>
@@ -289,7 +290,7 @@ export default function Page() {
 								<ChartContainer config={chartConfig}>
 									<BarChart data={shootings}>
 										<XAxis dataKey="name" />
-										<YAxis />
+										<YAxis tick={{ fontSize: 12 }} />
 										<Tooltip />
 										<Bar
 											dataKey="shooting"

@@ -21,7 +21,7 @@ import {
 import { QRCodeSVG } from "qrcode.react"; // Importando a biblioteca de QR Code
 import { LoadingSpinner } from "@/components/loading-spinner";
 
-export default function Shop() {
+export default function Credits() {
 	const navigate = useNavigate();
 
 

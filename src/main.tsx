@@ -6,9 +6,10 @@ import "./index.css";
 import { Login } from "./pages/Login.tsx";
 import { Register } from "./pages/Register.tsx";
 import { Toaster } from "@/components/ui/toaster"
-import Shop from "./pages/Shop.tsx";
 import { Leads } from "./pages/Leads.tsx";
 import Settings from "./pages/Setting.tsx";
+import Credits from "./pages/Credits.tsx";
+import { Shootings } from "./pages/Shootings.tsx";
 
 const route = createBrowserRouter([
 	{
@@ -28,8 +29,12 @@ const route = createBrowserRouter([
 		element: <Leads />,
 	},
 	{
-		path: "/shop",
-		element: <Shop />,
+		path: "/credits",
+		element: <Credits />,
+	},
+	{
+		path: "/shootings",
+		element: <Shootings />,
 	},
 	{
 		path: "/settings",

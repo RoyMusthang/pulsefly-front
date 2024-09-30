@@ -90,10 +90,17 @@ validateToken(Cookies.get('access_token'))
         </Link>
         <Separator orientation="vertical" />
         <Link
-          to="/shop"
+          to="/credits"
           className="text-muted-foreground transition-colors hover:text-foreground"
         >
-          Loja
+          Créditos
+        </Link>
+        <Separator orientation="vertical" />
+        <Link
+          to="/shootings"
+          className="text-muted-foreground transition-colors hover:text-foreground"
+        >
+          Disparos
         </Link>
         <Separator orientation="vertical" />
         <Link
