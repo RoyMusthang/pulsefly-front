@@ -20,17 +20,18 @@ import {
 } from "@/components/ui/dialog";
 import { QRCodeSVG } from "qrcode.react"; // Importando a biblioteca de QR Code
 import { LoadingSpinner } from "@/components/loading-spinner";
+import Aside from "@/components/aside";
 
 export default function Credits() {
 	const navigate = useNavigate();
 
 
-  useEffect(() => {
-    const user = localStorage.getItem("user");
-    if (!Cookies.get('access_token') && !user) {
-      navigate('/login');
-    }
-  }, [navigate])
+	useEffect(() => {
+		const user = localStorage.getItem("user");
+		if (!Cookies.get('access_token') && !user) {
+			navigate('/login');
+		}
+	}, [navigate])
 	const user = JSON.parse(localStorage.getItem("user") || "{}");
 
 	const [pixResponse, setPixResponse] = useState<any>(null); // Estado para armazenar a resposta do PIX
@@ -126,123 +127,126 @@ export default function Credits() {
 	}, []);
 
 	return (
-		<>
-			<Header />
-			<div className="flex items-center justify-center min-h-screen bg-gray-100">
-				<div className="w-full max-w-6xl mx-auto py-12 md:py-20">
-					<div className="text-center space-y-4 mb-12">
-						<h1 className="text-4xl md:text-5xl font-bold">
-							Planos para seus pagamentos por PIX
-						</h1>
-						<p className="text-muted-foreground text-lg md:text-xl max-w-3xl mx-auto">
-							Encontre o plano ideal para enviar seus pagamentos por PIX de
-							forma rápida e segura. Comece agora mesmo!
-						</p>
-					</div>
-					<div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-						{products.map((product: any) => (
-							<Card
-								className="bg-card text-card-foreground shadow-lg"
-								key={product.id}
-							>
-								<CardHeader>
-									<CardTitle className="text-2xl font-bold">{product.name}</CardTitle>
-									<div className="text-4xl font-bold">
-										R${product.amount}
-										<span className="text-lg font-normal">
-											/{product.shooting} disparos
-										</span>
-									</div>
-								</CardHeader>
-								<CardContent className="space-y-4">
-									<ul className="space-y-2 text-muted-foreground">
-										<li className="flex items-center gap-2">
-											<CheckIcon className="w-5 h-5 text-primary" />
-											capacidade de envio
-										</li>
-										<li className="flex items-center gap-2">
-											<CheckIcon className="w-5 h-5 text-primary" />
-											velociadade de envio
-										</li>
-										<li className="flex items-center gap-2">
-											<CheckIcon className="w-5 h-5 text-primary" />1 usuário
-										</li>
-										<li className="flex items-center gap-2">
-											<CheckIcon className="w-5 h-5 text-primary" />
-											Suporte básico
-										</li>
-									</ul>
-								</CardContent>
-								<CardFooter>
-									<Dialog open={popupIsOpen}>
-										<DialogTrigger asChild>
-											<Button onClick={() => handleBuy(product)} className="w-full">Comprar</Button>
-										</DialogTrigger>
-										<DialogContent className="sm:max-w-[425px]">
-											<DialogTitle>Compra</DialogTitle>
-											<div className="flex flex-col items-center justify-center gap-4 py-8">
-												{pixResponse ? (
-													<div className="mt-4 flex-col flex items-center justify-center gap-4">
-														{paymentStatus === 'PAID' ? (
-															<div className="text-center">
-<div className="flex flex-col items-center justify-center gap-4 py-8">
-          <CheckCircle2 className="h-16 w-16 text-green-500" />
-          <p className="text-lg font-medium text-center">
-           Disparos adicionados com sucesso!
-          </p>
-        </div>
-																<Button onClick={() => closeShop()}>
-																	Fechar
-																</Button>
-															</div>
-														) : (
-															<>
-																<div className="flex flex-col items-center">
-																	<h3 className="text-lg font-bold mt-4">QR Code:</h3>
-																	<QRCodeSVG value={pixResponse.pixCopiaECola} size={200} />
-																</div>
-																<div className="flex flex-col items-center">
-																	<h3 className="text-lg font-bold">Pix Copia e Cola:</h3>
-																	<div className="w-96 bg-gray-100 p-2 rounded">
-																		<p className="overflow-auto break-word">
-																			{pixResponse.pixCopiaECola}
+		<div className="flex h-screen">
+			<Aside />
+			<div className="flex flex-col bg-background flex-grow">
+				<Header />
+				<main className="flex-1 max-w-4xl mx-auto p-4 ">
+					<div className="w-full max-w-6xl mx-auto  md:py-20">
+						<div className="text-center space-y-4 mb-12">
+							<h1 className="text-4xl md:text-5xl font-bold">
+								Planos para seus pagamentos por PIX
+							</h1>
+							<p className="text-muted-foreground text-lg md:text-xl max-w-3xl mx-auto">
+								Encontre o plano ideal para enviar seus pagamentos por PIX de
+								forma rápida e segura. Comece agora mesmo!
+							</p>
+						</div>
+						<div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+							{products.map((product: any) => (
+								<Card
+									className="bg-card text-card-foreground shadow-lg"
+									key={product.id}
+								>
+									<CardHeader>
+										<CardTitle className="text-2xl font-bold">{product.name}</CardTitle>
+										<div className="text-4xl font-bold">
+											R${product.amount}
+											<span className="text-lg font-normal">
+												/{product.shooting} disparos
+											</span>
+										</div>
+									</CardHeader>
+									<CardContent className="space-y-4">
+										<ul className="space-y-2 text-muted-foreground">
+											<li className="flex items-center gap-2">
+												<CheckIcon className="w-5 h-5 text-primary" />
+												capacidade de envio
+											</li>
+											<li className="flex items-center gap-2">
+												<CheckIcon className="w-5 h-5 text-primary" />
+												velociadade de envio
+											</li>
+											<li className="flex items-center gap-2">
+												<CheckIcon className="w-5 h-5 text-primary" />1 usuário
+											</li>
+											<li className="flex items-center gap-2">
+												<CheckIcon className="w-5 h-5 text-primary" />
+												Suporte básico
+											</li>
+										</ul>
+									</CardContent>
+									<CardFooter>
+										<Dialog open={popupIsOpen}>
+											<DialogTrigger asChild>
+												<Button onClick={() => handleBuy(product)} className="w-full">Comprar</Button>
+											</DialogTrigger>
+											<DialogContent className="sm:max-w-[425px]">
+												<DialogTitle>Compra</DialogTitle>
+												<div className="flex flex-col items-center justify-center gap-4 py-8">
+													{pixResponse ? (
+														<div className="mt-4 flex-col flex items-center justify-center gap-4">
+															{paymentStatus === 'PAID' ? (
+																<div className="text-center">
+																	<div className="flex flex-col items-center justify-center gap-4 py-8">
+																		<CheckCircle2 className="h-16 w-16 text-green-500" />
+																		<p className="text-lg font-medium text-center">
+																			Disparos adicionados com sucesso!
 																		</p>
 																	</div>
-																	<div className="flex align-baseline gap-6 justify-between">
-
-																		<Button
-																			className="mt-2 p-2"
-																			onClick={() =>
-																				navigator.clipboard.writeText(
-																					pixResponse.pixCopiaECola,
-																				)
-																			}
-																		>
-																			Copiar
-																		</Button>
-																		<Button
-																			className="mt-2 p-2"
-																			onClick={() => closeShop()}
-																		>
-																			Fechar
-																		</Button>
-																	</div>
+																	<Button onClick={() => closeShop()}>
+																		Fechar
+																	</Button>
 																</div>
-															</>
-														)}
-													</div>
-												) : (
-													<LoadingSpinner />
-												)}
-											</div>
-										</DialogContent>
-									</Dialog>
-								</CardFooter>
-							</Card>
-						))}
+															) : (
+																<>
+																	<div className="flex flex-col items-center">
+																		<h3 className="text-lg font-bold mt-4">QR Code:</h3>
+																		<QRCodeSVG value={pixResponse.pixCopiaECola} size={200} />
+																	</div>
+																	<div className="flex flex-col items-center">
+																		<h3 className="text-lg font-bold">Pix Copia e Cola:</h3>
+																		<div className="w-96 bg-gray-100 p-2 rounded">
+																			<p className="overflow-auto break-word">
+																				{pixResponse.pixCopiaECola}
+																			</p>
+																		</div>
+																		<div className="flex align-baseline gap-6 justify-between">
+
+																			<Button
+																				className="mt-2 p-2"
+																				onClick={() =>
+																					navigator.clipboard.writeText(
+																						pixResponse.pixCopiaECola,
+																					)
+																				}
+																			>
+																				Copiar
+																			</Button>
+																			<Button
+																				className="mt-2 p-2"
+																				onClick={() => closeShop()}
+																			>
+																				Fechar
+																			</Button>
+																		</div>
+																	</div>
+																</>
+															)}
+														</div>
+													) : (
+														<LoadingSpinner />
+													)}
+												</div>
+											</DialogContent>
+										</Dialog>
+									</CardFooter>
+								</Card>
+							))}
+						</div>
 					</div>
-				</div>
+				</main>
 			</div>
-		</>
+		</div>
 	);
 }

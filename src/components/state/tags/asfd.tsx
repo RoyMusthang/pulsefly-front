@@ -12,4 +12,9 @@ export const useTagsStore: any = create<tagsState>()(zukeeper((set: any) => ({
   setTags: (tags: Option[]) => set(() => ({ tags })),
 })))
 
+export const useAsideBarOpen: any = create()(zukeeper((set: any) => ({
+  isOpen: false,
+  setIsOpen: () => set((state: any) => ({ isOpen: !state.isOpen })),
+})))
+
 window.Storage = useTagsStore;
