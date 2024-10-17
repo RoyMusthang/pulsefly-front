@@ -80,57 +80,54 @@ export function Reports() {
                                     <TableHead className="px-6 py-3 text-left text-xs font-medium  uppercase tracking-wider">Ações</TableHead>
                                 </TableRow>
                             </TableHeader>
-                            <TableBody >
-                                {data?.length > 0 ? (
-                                    data?.map((item) => (
-                                        <TableRow key={item.id}>
-                                            <TableCell className="px-6 py-4 whitespace-nowrap" title={item.transaction.transaction_id}>
-                                                {item.transaction.transaction_id.slice(0, 6)}{item.transaction.transaction_id.length > 6}
-                                            </TableCell>
-                                            <TableCell className="px-6 py-4 whitespace-nowrap">
-                                                <div className="flex items-center gap-2">
-                                                    <Avatar>
-                                                        <AvatarImage src={item.user.image} alt={item.user.name} />
-                                                        <AvatarFallback>US</AvatarFallback>
-                                                    </Avatar>
-                                                    <div>
-                                                        <div className="text-sm font-medium ">{item.user.name}</div>
-                                                        <div className="text-sm ">{item.user.email}</div>
-                                                    </div>
+                            <TableBody>
+                                {data?.map((item) => (
+                                    <TableRow key={item.id}>
+                                        <TableCell className="px-6 py-4 whitespace-nowrap" title={item.transaction.transaction_id}>
+                                            {item.transaction.transaction_id.slice(0, 6)}{item.transaction.transaction_id.length > 6 && '...'}
+                                        </TableCell>
+                                        <TableCell className="px-6 py-4 whitespace-nowrap">
+                                            <div className="flex items-center gap-2">
+                                                <Avatar>
+                                                    <AvatarImage src={item.user.image} alt={item.user.name} />
+                                                    <AvatarFallback>US</AvatarFallback>
+                                                </Avatar>
+                                                <div>
+                                                    <div className="text-sm font-medium ">{item.user.name}</div>
+                                                    <div className="text-sm ">{item.user.email}</div>
                                                 </div>
-                                            </TableCell>
-                                            <TableCell className="px-6 py-4 whitespace-nowrap">
-                                                {Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(item.transaction.amount)}
-                                            </TableCell>
-                                            <TableCell className="px-6 py-4 whitespace-nowrap">
-                                                <Badge
-                                                   variant={item.transaction.status === 'PAID' ? 'success' : 'secondary'}
-                                                >
-                                                    {item.transaction.status}
-                                                </Badge>
-                                            </TableCell>
-                                            <TableCell className="px-6 py-4 whitespace-nowrap" title={new Date(item.transaction.created_at).toLocaleString('pt-BR')}>
-                                                {new Date(item.transaction.created_at).toLocaleDateString('pt-BR')}
-                                            </TableCell>
+                                            </div>
+                                        </TableCell>
+                                        <TableCell className="px-6 py-4 whitespace-nowrap">
+                                            {Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(item.transaction.amount)}
+                                        </TableCell>
+                                        <TableCell className="px-6 py-4 whitespace-nowrap">
+                                            <Badge
+                                                variant={item.transaction.status === 'PAID' ? 'success' : 'secondary'}
+                                            >
+                                                {item.transaction.status}
+                                            </Badge>
+                                        </TableCell>
+                                        <TableCell className="px-6 py-4 whitespace-nowrap" title={new Date(item.transaction.created_at).toLocaleString('pt-BR')}>
+                                            {new Date(item.transaction.created_at).toLocaleDateString('pt-BR')}
+                                        </TableCell>
 
-                                            <TableCell className="px-6 py-4 whitespace-nowrap text-sm ">
-                                                <Button variant="ghost" size="icon">
-                                                    <MoreHorizontal className="h-5 w-5" />
-                                                </Button>
-                                            </TableCell>
-                                        </TableRow>
-                                    ))
-                                ) : (
-                                    <TableRow>
-                                        <TableCell className="border-b border-slate-200 px-6 py-3 text-sm">Nenhuma transacao encontrada</TableCell>
+                                        <TableCell className="px-6 py-4 whitespace-nowrap text-sm ">
+                                            <Button variant="ghost" size="icon">
+                                                <MoreHorizontal className="h-5 w-5" />
+                                            </Button>
+                                        </TableCell>
                                     </TableRow>
-                                )}
+
+                                )) || (
+                                        <TableRow>
+                                            <TableCell className="border-b border-slate-200 px-6 py-3 text-sm">Nenhuma transacao encontrada</TableCell>
+                                        </TableRow>
+                                    )}
                             </TableBody>
                         </Table>
                     </div>
                 </div>
-
-
             </div>
         </div>
     )
