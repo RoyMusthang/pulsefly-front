@@ -12,11 +12,16 @@ import Credits from "./pages/Credits.tsx";
 import { Shootings } from "./pages/Shootings.tsx";
 import { ThemeProvider } from "./components/theme-provider.tsx";
 import { Reports } from "./pages/Reports.tsx";
+import Verify from "./pages/Verify.tsx";
 
 const route = createBrowserRouter([
 	{
 		path: "/",
 		element: <App />,
+	},
+	{
+		path: "/verify",
+		element: <Verify />,
 	},
   {
 		path: "/login",
