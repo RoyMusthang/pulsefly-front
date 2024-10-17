@@ -98,9 +98,8 @@ export default function Page() {
 
 	// Effect to fetch user data on component mount
 	useEffect(() => {
-
 		getCreditsByUser();
-	}, [getCreditsByUser]);
+	}, []);
 	return (
 		<div className="flex h-screen">
 			<Aside />

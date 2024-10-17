@@ -17,4 +17,9 @@ export const useAsideBarOpen: any = create()(zukeeper((set: any) => ({
   setIsOpen: () => set((state: any) => ({ isOpen: !state.isOpen })),
 })))
 
+export const useUserSession: any = create()(zukeeper((set: any) => ({
+  user: null,
+  setUser: (user: any) => set(() => ({ user })),
+})))
+
 window.Storage = useTagsStore;

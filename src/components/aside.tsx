@@ -11,9 +11,9 @@ const Aside: React.FC = () => {
 
     const menuItems = [
         { icon: Box, label: 'Dashboard', link: '/' },
-        { icon: ShoppingCart, label: 'Créditos', link: '/credits' },
         { icon: Send, label: 'Disparos', link: '/dispatch' },
         { icon: User, label: 'Leads', link: '/leads' },
+        { icon: ShoppingCart, label: 'Créditos', link: '/credits' },
         { icon: FileArchive, label: 'Relatórios', link: '/reports' },
         { icon: Settings, label: 'Configurações', link: '/settings' },
     ]

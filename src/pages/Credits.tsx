@@ -10,17 +10,19 @@ import {
 	CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { CheckCircle2, CheckIcon } from "lucide-react";
+import { CheckCircle2, CheckIcon, Copy, X } from "lucide-react";
 import axios from "axios";
 import {
 	Dialog,
 	DialogContent,
+	DialogHeader,
 	DialogTitle,
 	DialogTrigger,
 } from "@/components/ui/dialog";
 import { QRCodeSVG } from "qrcode.react"; // Importando a biblioteca de QR Code
 import { LoadingSpinner } from "@/components/loading-spinner";
 import Aside from "@/components/aside";
+import { Textarea } from "@/components/ui/textarea";
 
 export default function Credits() {
 	const navigate = useNavigate();
@@ -132,7 +134,7 @@ export default function Credits() {
 			<div className="flex flex-col bg-background flex-grow">
 				<Header />
 				<main className="flex-1 max-w-4xl mx-auto p-4 ">
-					<div className="w-full max-w-6xl mx-auto  md:py-20">
+					<div className="w-full max-w-6xl mx-auto">
 						<div className="text-center space-y-4 mb-12">
 							<h1 className="text-4xl md:text-5xl font-bold">
 								Planos para seus pagamentos por PIX
@@ -151,7 +153,7 @@ export default function Credits() {
 									<CardHeader>
 										<CardTitle className="text-2xl font-bold">{product.name}</CardTitle>
 										<div className="text-4xl font-bold">
-											R${product.amount}
+											{Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(product.amount)}
 											<span className="text-lg font-normal">
 												/{product.shooting} disparos
 											</span>
@@ -177,15 +179,17 @@ export default function Credits() {
 										</ul>
 									</CardContent>
 									<CardFooter>
-										<Dialog open={popupIsOpen}>
+										<Dialog open={popupIsOpen} onOpenChange={setPopupIsOpen}>
 											<DialogTrigger asChild>
 												<Button onClick={() => handleBuy(product)} className="w-full">Comprar</Button>
 											</DialogTrigger>
 											<DialogContent className="sm:max-w-[425px]">
-												<DialogTitle>Compra</DialogTitle>
-												<div className="flex flex-col items-center justify-center gap-4 py-8">
-													{pixResponse ? (
-														<div className="mt-4 flex-col flex items-center justify-center gap-4">
+												<DialogHeader>
+													<DialogTitle>Comprar via pix</DialogTitle>
+												</DialogHeader>
+												{
+													pixResponse ? (
+														<div className="grid gap-4 py-4">
 															{paymentStatus === 'PAID' ? (
 																<div className="text-center">
 																	<div className="flex flex-col items-center justify-center gap-4 py-8">
@@ -200,36 +204,34 @@ export default function Credits() {
 																</div>
 															) : (
 																<>
-																	<div className="flex flex-col items-center">
-																		<h3 className="text-lg font-bold mt-4">QR Code:</h3>
+																	<div className="flex justify-center">
 																		<QRCodeSVG value={pixResponse.pixCopiaECola} size={200} />
 																	</div>
-																	<div className="flex flex-col items-center">
-																		<h3 className="text-lg font-bold">Pix Copia e Cola:</h3>
-																		<div className="w-96 bg-gray-100 p-2 rounded">
-																			<p className="overflow-auto break-word">
-																				{pixResponse.pixCopiaECola}
-																			</p>
-																		</div>
-																		<div className="flex align-baseline gap-6 justify-between">
+																	<Textarea className="resize-none h-20"
+																		value={pixResponse.pixCopiaECola}
+																		readOnly
+																	/>
 
-																			<Button
-																				className="mt-2 p-2"
-																				onClick={() =>
-																					navigator.clipboard.writeText(
-																						pixResponse.pixCopiaECola,
-																					)
-																				}
-																			>
-																				Copiar
-																			</Button>
-																			<Button
-																				className="mt-2 p-2"
-																				onClick={() => closeShop()}
-																			>
-																				Fechar
-																			</Button>
-																		</div>
+																	<div className="flex align-baseline gap-6 justify-between">
+
+																		<Button
+																			className="mt-2 p-2"
+																			onClick={() =>
+																				navigator.clipboard.writeText(
+																					pixResponse.pixCopiaECola,
+																				)
+																			}
+																		>
+																			<Copy className="mr-2 h-4 w-4" />
+																			Copiar
+																		</Button>
+																		<Button
+																			className="mt-2 p-2"
+																			onClick={() => closeShop()}
+																		>
+																			<X className="mr-2 h-4 w-4" />
+																			Fechar
+																		</Button>
 																	</div>
 																</>
 															)}
@@ -237,7 +239,6 @@ export default function Credits() {
 													) : (
 														<LoadingSpinner />
 													)}
-												</div>
 											</DialogContent>
 										</Dialog>
 									</CardFooter>
@@ -246,7 +247,7 @@ export default function Credits() {
 						</div>
 					</div>
 				</main>
-			</div>
-		</div>
+			</div >
+		</div >
 	);
 }

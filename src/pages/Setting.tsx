@@ -9,9 +9,16 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { useForm } from "react-hook-form";
+import axios from "axios";
+import { useUserSession } from "@/components/state/tags/asfd";
+import { toast } from "@/components/ui/use-toast";
 
 export default function Settings() {
   const navigate = useNavigate();
+  const form = useForm();
+  const { user } = useUserSession();
 
   useEffect(() => {
     const user = localStorage.getItem("user");
@@ -30,6 +37,50 @@ export default function Settings() {
     validateToken();
   }, [navigate]);
 
+  const handleChangePassword = async (data: any) => {
+    try {
+      if (data.password !== data.passwordConfirmation) {
+        toast({
+          title: "Erro no cadastro",
+          description: "As senhas não coincidem."
+        })
+        return;
+      }
+      const response = await axios.put(`${import.meta.env.VITE_BASE_URL}/user/${user.id}`, {
+        password: data.password
+      }, {
+        headers: {
+          Authorization: `Bearer ${Cookies.get('access_token')}`
+        }
+      });
+      if (response.status === 200) {
+        console.log(response.data)
+        localStorage.setItem("user", JSON.stringify(response.data))
+      }
+    } catch (error) {
+      console.error("Failed to update user data:", error);
+    }
+  }
+
+  const handleSubmit = async (data: any) => {
+    try {
+      const response = await axios.put(`${import.meta.env.VITE_BASE_URL}/user/${user.id}`, {
+        name: data.name,
+        email: data.email,
+        image: data.image
+      }, {
+        headers: {
+          Authorization: `Bearer ${Cookies.get('access_token')}`
+        }
+      });
+      if (response.status === 200) {
+        console.log(response.data)
+        localStorage.setItem("user", JSON.stringify(response.data))
+      }
+    } catch (error) {
+      console.error("Failed to update user data:", error);
+    }
+  }
   return (
 
     <div className="flex h-screen">
@@ -50,55 +101,117 @@ export default function Settings() {
                   <CardTitle>Informações Pessoais</CardTitle>
                   <CardDescription>Atualize suas informações pessoais aqui.</CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="nome">Nome</Label>
-                    <Input id="nome" placeholder="Seu nome completo" />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="email">E-mail</Label>
-                    <Input id="email" type="email" placeholder="seu@email.com" />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="imagem">Imagem de perfil</Label>
-                    <Input id="iamgem" placeholder="https://i.imgur.com/5eMAuXg.jpeg" />
-                  </div>
-                </CardContent>
-                <CardFooter>
-                  <Button>Salvar Alterações</Button>
-                </CardFooter>
+                <Form {...form}>
+                  <form onSubmit={form.handleSubmit(handleSubmit)}>
+                    <CardContent className="space-y-4">
+
+                      <FormField
+                        control={form.control}
+                        name="name"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Nome</FormLabel>
+                            <FormControl>
+                              <Input placeholder="Seu nome completo" {...field} />
+                            </FormControl>
+                            <FormDescription>Seu nome completo.</FormDescription>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name="email"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>E-mail</FormLabel>
+                            <FormControl>
+                              <Input placeholder="seu@email.com" {...field} />
+                            </FormControl>
+                          </FormItem>
+
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name="image"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Imagem</FormLabel>
+                            <FormControl>
+                              <Input placeholder="imgur.com" {...field} />
+                            </FormControl>
+                          </FormItem>
+                        )}
+                      />
+                    </CardContent>
+                    <CardFooter>
+                      <Button type="submit">Salvar Alterações</Button>
+                    </CardFooter>
+                  </form>
+                </Form>
               </Card>
             </TabsContent>
             <TabsContent value="seguranca">
               <Card>
                 <CardHeader>
                   <CardTitle>Segurança</CardTitle>
-                  <CardDescription>Gerencie sua senha e configurações de segurança.</CardDescription>
+                  <CardDescription>Em construção...</CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="senha-atual">Senha Atual</Label>
-                    <Input id="senha-atual" type="password" />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="nova-senha">Nova Senha</Label>
-                    <Input id="nova-senha" type="password" />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="confirmar-senha">Confirmar Nova Senha</Label>
-                    <Input id="confirmar-senha" type="password" />
-                  </div>
-                </CardContent>
-                <CardFooter>
-                  <Button>Atualizar Senha</Button>
-                </CardFooter>
+                <Form {...form}>
+                  <form onSubmit={form.handleSubmit(handleChangePassword)}>
+                    <CardContent className="space-y-4">
+                      <FormField
+                        control={form.control}
+                        name="passwordAcc"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Senha Atual</FormLabel>
+                            <FormControl>
+                              <Input placeholder="********" {...field} />
+                            </FormControl>
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="password"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Nova Senha</FormLabel>
+                            <FormControl>
+                              <Input placeholder="********" {...field} />
+                            </FormControl>
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="passwordConfirmation"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Confirmar Nova Senha</FormLabel>
+                            <FormControl>
+                              <Input placeholder="********" {...field} />
+                            </FormControl>
+                          </FormItem>
+                        )}
+                      />
+                    </CardContent>
+                    <CardFooter>
+                      <Button disabled>Atualizar Senha</Button>
+                    </CardFooter>
+                  </form>
+                </Form>
               </Card>
             </TabsContent>
             <TabsContent value="notificacoes">
               <Card>
                 <CardHeader>
                   <CardTitle>Preferências de Notificação</CardTitle>
-                  <CardDescription>Escolha como deseja receber notificações.</CardDescription>
+                  <CardDescription>Em construção...</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="flex items-center justify-between">
@@ -115,13 +228,13 @@ export default function Settings() {
                   </div>
                 </CardContent>
                 <CardFooter>
-                  <Button>Salvar Preferências</Button>
+                  <Button disabled>Salvar Preferências</Button>
                 </CardFooter>
               </Card>
             </TabsContent>
           </Tabs>
-          </main>
+        </main>
       </div>
-    </div>
+    </div >
   );
 }
