@@ -31,7 +31,7 @@ export function Login() {
 			});
 			if (response.status === 200) {
 				console.log(response.data.access_token)
-        Cookies.set('access_token', response.data.access_token, { expires: 7 }); // Expires in 7 days
+				Cookies.set('access_token', response.data.access_token, { expires: 7 }); // Expires in 7 days
 
 				toast({
 					title: "Usuario logado com sucesso",
@@ -39,11 +39,14 @@ export function Login() {
 				})
 				navigate("/")
 			}
-		} catch (err) {
+		} catch (err: any) {
+			// Capturando a mensagem de erro da resposta da API
+			const errorMessage = err.response?.data?.error || err.message || "Erro ao logar";
+
 			toast({
 				title: "Erro ao Logar",
-				description: "Por favor, tente novamente."
-			})
+				description: errorMessage,
+			});
 		}
 	};
 
