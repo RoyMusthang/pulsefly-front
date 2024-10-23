@@ -13,11 +13,12 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import { useForm } from "react-hook-form";
 import axios from "axios";
 import { useUserSession } from "@/components/state/tags/asfd";
-import { toast } from "@/components/ui/use-toast";
+import { useToast } from "@/components/ui/use-toast";
 
 export default function Settings() {
   const navigate = useNavigate();
   const form = useForm();
+  const { toast } = useToast()
   const { user } = useUserSession();
 
   useEffect(() => {
@@ -55,7 +56,7 @@ export default function Settings() {
       });
       if (response.status === 200) {
         console.log(response.data)
-        localStorage.setItem("user", JSON.stringify(response.data))
+        Cookies.set('access_token', response.data.token); // Expires in 7 days
       }
     } catch (error) {
       console.error("Failed to update user data:", error);
@@ -66,7 +67,6 @@ export default function Settings() {
     try {
       const response = await axios.put(`${import.meta.env.VITE_BASE_URL}/user/${user.id}`, {
         name: data.name,
-        email: data.email,
         image: data.image
       }, {
         headers: {
@@ -75,9 +75,19 @@ export default function Settings() {
       });
       if (response.status === 200) {
         console.log(response.data)
-        localStorage.setItem("user", JSON.stringify(response.data))
+        Cookies.set('access_token', response.data.token); // Expires in 7 days
+        toast({
+          title: "Sucesso no cadastro",
+          description: "Informações atualizadas com sucesso."
+        })
+        window.location.reload();
+        
       }
     } catch (error) {
+      toast({
+      title: "Erro no cadastro",
+        description: "Ocorreu um erro ao atualizar as informações."
+      })
       console.error("Failed to update user data:", error);
     }
   }
@@ -112,26 +122,16 @@ export default function Settings() {
                           <FormItem>
                             <FormLabel>Nome</FormLabel>
                             <FormControl>
-                              <Input placeholder="Seu nome completo" {...field} />
+                              <Input placeholder={user?.name} {...field} />
                             </FormControl>
                             <FormDescription>Seu nome completo.</FormDescription>
                             <FormMessage />
                           </FormItem>
                         )}
                       />
-                      <FormField
-                        control={form.control}
-                        name="email"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>E-mail</FormLabel>
-                            <FormControl>
-                              <Input placeholder="seu@email.com" {...field} />
-                            </FormControl>
-                          </FormItem>
-
-                        )}
-                      />
+                      
+                      <Input placeholder={user?.email} disabled />
+                          
                       <FormField
                         control={form.control}
                         name="image"
@@ -139,7 +139,7 @@ export default function Settings() {
                           <FormItem>
                             <FormLabel>Imagem</FormLabel>
                             <FormControl>
-                              <Input placeholder="imgur.com" {...field} />
+                              <Input placeholder={user?.image ? user?.image : ""} {...field} />
                             </FormControl>
                           </FormItem>
                         )}
