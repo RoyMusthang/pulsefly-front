@@ -154,9 +154,7 @@ export default function Credits() {
 										<CardTitle className="text-2xl font-bold">{product.name}</CardTitle>
 										<div className="text-4xl font-bold">
 											{Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(product.amount)}
-											<span className="text-lg font-normal">
-												/{product.shooting} disparos
-											</span>
+										
 										</div>
 									</CardHeader>
 									<CardContent className="space-y-4">
