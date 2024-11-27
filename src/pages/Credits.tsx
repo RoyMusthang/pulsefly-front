@@ -159,25 +159,7 @@ export default function Credits() {
 											</span>
 										</div>
 									</CardHeader>
-									<CardContent className="space-y-4">
-										<ul className="space-y-2 text-muted-foreground">
-											<li className="flex items-center gap-2">
-												<CheckIcon className="w-5 h-5 text-primary" />
-												capacidade de envio
-											</li>
-											<li className="flex items-center gap-2">
-												<CheckIcon className="w-5 h-5 text-primary" />
-												velociadade de envio
-											</li>
-											<li className="flex items-center gap-2">
-												<CheckIcon className="w-5 h-5 text-primary" />1 usuário
-											</li>
-											<li className="flex items-center gap-2">
-												<CheckIcon className="w-5 h-5 text-primary" />
-												Suporte básico
-											</li>
-										</ul>
-									</CardContent>
+									
 									<CardFooter>
 										<Dialog open={popupIsOpen} onOpenChange={setPopupIsOpen}>
 											<DialogTrigger asChild>
