@@ -4,12 +4,13 @@ import { useEffect, useState } from "react";
 import Header from "@/components/header";
 import {
 	Card,
+	CardContent,
 	CardFooter,
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { CheckCircle2,  Copy, X } from "lucide-react";
+import { CheckCircle2, Copy, X } from "lucide-react";
 import axios from "axios";
 import {
 	Dialog,
@@ -158,7 +159,14 @@ export default function Credits() {
 											</span>
 										</div>
 									</CardHeader>
-									
+									<CardContent className="space-y-4">
+										<ul className="space-y-2 text-muted-foreground">
+											<li className="flex items-center gap-2">
+											  {product.shooting} disparos
+											</li>
+											
+										</ul>
+									</CardContent>
 									<CardFooter>
 										<Dialog open={popupIsOpen} onOpenChange={setPopupIsOpen}>
 											<DialogTrigger asChild>
