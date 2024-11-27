@@ -4,13 +4,12 @@ import { useEffect, useState } from "react";
 import Header from "@/components/header";
 import {
 	Card,
-	CardContent,
 	CardFooter,
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { CheckCircle2, CheckIcon, Copy, X } from "lucide-react";
+import { CheckCircle2,  Copy, X } from "lucide-react";
 import axios from "axios";
 import {
 	Dialog,
