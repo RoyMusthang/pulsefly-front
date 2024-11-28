@@ -285,7 +285,7 @@ export function Leads() {
                   </div>
                   <Button
                     onClick={handleSubmit}
-                    disabled={!file || isUploading}
+                    disabled={!file || isUploading || tag}
                     className="w-full"
                   >
                     {isUploading ? 'Uploading...' : 'Submit'}
