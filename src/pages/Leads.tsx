@@ -227,7 +227,7 @@ export function Leads() {
                 <div className="space-y-4">
                   <div className="space-x-4">
                     <Label htmlFor="tag" className="text-sm font-medium">
-                      TAG
+                      TAG<span className="text-red-500">*</span>
                       <Input
                         id="tag"
                         type="text"
