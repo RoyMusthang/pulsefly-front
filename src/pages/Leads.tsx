@@ -71,7 +71,6 @@ export function Leads() {
     formData.append('file', new Blob([chunk], { type: 'text/csv' }), `chunk-${chunkIndex}`);
     formData.append('chunkIndex', chunkIndex.toString());
     formData.append('totalChunks', totalChunks.toString());
-    console.log("tga", tag)
     const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/lead/${tag}`, formData, {
       headers: {
         'Authorization': `Bearer ${Cookies.get('access_token')}`,
@@ -285,9 +284,10 @@ export function Leads() {
                   </div>
                   <Button
                     onClick={handleSubmit}
-                    disabled={!file || isUploading || tag}
+                    disabled={!file || isUploading || !tag}
                     className="w-full"
                   >
+                    {tag === ""}
                     {isUploading ? 'Uploading...' : 'Submit'}
                   </Button>
 
