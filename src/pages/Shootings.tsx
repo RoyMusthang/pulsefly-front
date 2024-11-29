@@ -201,8 +201,8 @@ export function Shootings() {
                     <TableRow key={invoice.id}>
                       <TableCell>{invoice.id}</TableCell>                      
                       <TableCell>{invoice.quantity}</TableCell>
-                      <TableCell>{invoice.sucess_shooting}</TableCell>
-                      <TableCell>{invoice.fail_shooting}</TableCell>
+                      <TableCell>{invoice.sucess_shooting || '0'}</TableCell>
+                      <TableCell>{invoice.fail_shooting || '0'}</TableCell>
                       <TableCell>{invoice.created_at}</TableCell>
                     </TableRow>
                   ))}
