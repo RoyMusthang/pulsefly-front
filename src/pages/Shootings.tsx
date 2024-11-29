@@ -191,14 +191,18 @@ export function Shootings() {
                   <TableRow>
                     <TableHead>Id</TableHead>
                     <TableHead>Quantidade de leads</TableHead>
+                    <TableHead>Disparos com sucesso</TableHead>
+                    <TableHead>Disparos com falha</TableHead>
                     <TableHead>Disparado em</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {data.map((invoice) => (
                     <TableRow key={invoice.id}>
-                      <TableCell>{invoice.id}</TableCell>
+                      <TableCell>{invoice.id}</TableCell>                      
                       <TableCell>{invoice.quantity}</TableCell>
+                      <TableCell>{invoice.sucess_shooting}</TableCell>
+                      <TableCell>{invoice.fail_shooting}</TableCell>
                       <TableCell>{invoice.created_at}</TableCell>
                     </TableRow>
                   ))}
